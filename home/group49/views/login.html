@@ -11,7 +11,7 @@
                 $.post("/login",{user: user,password: pass}, function(data){
                     if(data==='done')
                     {
-                        alert("login success");
+                        alert("Page loaded");
                     }
                 });
             });
@@ -19,7 +19,7 @@
     </script>
   </head>
   <body>
-    <h1>Hello people !</h1>
+    <h1>Please login or register</h1>
     <input type="TEXT" id="user" size="40"><br>
     <input type="password" id="password" size="40"><br>
     <input type="button" id="login" value="Log in">

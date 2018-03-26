@@ -17,6 +17,9 @@ app.get('/',function(req,res){
         console.log("welcome back mah dude");
     }
 });
+app.get('/home', function (req, res) {
+    res.send('/views/home.html');
+  });
 app.post('/login',function(req,res){
 
     var user=req.body.user;
@@ -24,6 +27,8 @@ app.post('/login',function(req,res){
     console.log("User name = "+user+", password is "+password);
     //set session
     session.user = user;
+    res.sendfile("/views/home.html");
+    //res.redirect('/home');
     res.end("done");
 });
 app.get('/logout',function(req,res) {
@@ -31,6 +36,9 @@ app.get('/logout',function(req,res) {
         res.redirect('/');
     });
 });
+app.use(function(request, response) {
+    response.status(404).send("Page not found!");
+    });
 app.listen(8043,function(){
     console.log("Started on PORT 8043");
-})
+});
