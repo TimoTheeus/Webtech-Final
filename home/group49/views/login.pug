@@ -1,0 +1,13 @@
+html
+    head
+        script(src = '"https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"')
+        script(src='/../scripts/login.js')
+        title Login Screen
+    body
+        h1= 'Please log in or make a new account'
+        input#username(type = 'text' placeholder = 'Username')
+        br
+        input#password(type = 'text' placeholder = 'Password')
+        br
+        button#loginButton Log in
+        a#Register(href = '/') Register
