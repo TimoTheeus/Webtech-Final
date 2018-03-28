@@ -11,7 +11,7 @@ app.set('view engine', 'pug');
 var session;
 app.get('/',function(req,res){
     session = req.session;
-    res.sendfile("views/login.html");
+    res.render("views/login.html");
     if(session.user){
         //do something
         console.log("welcome back mah dude");
@@ -27,6 +27,7 @@ app.post('/login',function(req,res){
     console.log("User name = "+user+", password is "+password);
     //set session
     session.user = user;
+    //switch to home page
     res.sendfile("/views/home.html");
     //res.redirect('/home');
     res.end("done");
