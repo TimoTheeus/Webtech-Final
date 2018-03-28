@@ -1,11 +1,11 @@
 var db = new require('sqlite3').Database('data.db');
 
 class DBItem {
-    constructor(id, params, cols) {
+    constructor(id, params) {
         this.table = '';
         this.idName = 'id';
         this.id = id;
-        if (!(Array.isArray(this.cols) && this.cols.length))
+        if (!(params && Array.isArray(this.cols) && this.cols.length))
             this.props = params || {};
         else
         {
@@ -17,10 +17,32 @@ class DBItem {
             });
         }
     }
-    select() {
-        db.get('SELECT * FROM ? WHERE ? = ?;', this.table, this.idName, this.id, (err, row) =>
-            if (row) Object.keys(row).forEach(key => if (key != this.idName) this.props[key] = row[key])
-        );
+    select(callback) {
+        db.get('SELECT * FROM ? WHERE ? = ?;', this.table, this.idName, this.id, (err, row) => {
+            if (row) 
+                Object.keys(row).forEach(key => if (key != this.idName) this.props[key] = row[key];
+            // TEST THIS
+            callback.call(this); 
+        });
+    }
+    selectMany(prop, value, callback)
+    {
+        function f(err, rows, cur) {
+            var result = [];
+            if (rows)
+                result = rows.map(row => {
+                    var id = row[cur.idName];
+                    delete row[cur.idName];
+                    result.push(new cur.constructor(id, row));
+                });
+            // FIX THIS
+            (callback || prop)(result);
+        }
+        if (typeof prop == 'string')
+            db.all('SELECT * FROM ? WHERE ? = ?;', this.table, this[prop], this.value, (err, rows) => f(err, rows, this));
+        else
+            db.all('SELECT * FROM ?', this.table, (err, rows) => f(err, rows, this));
+        
     }
     insert() {
         var placeholders = '(?' + ', ?'.repeat(this.props.length - 1) + ')';
@@ -34,18 +56,17 @@ class DBItem {
     _params(var insert)
     {
         var params = [this.table];
-        var keys = Object.keys(this.props);
-        for (var i = 1; i <= keys.length; i++) {
+        for (var i = 1; i <= this.cols.length; i++) {
             var i1, i2;
             if (insert) {
                 i1 = i;
-                i2 = i + keys.Length;
+                i2 = i + this.cols.Length;
             } else {
                 i1 = 2 * i - 1;
                 i2 = i1 + 1;
             }
-            params[i1] = keys[i];
-            params[i2] = this.props[keys[i]];
+            params[i1] = this.cols[i];
+            params[i2] = this.props[this.cols[i]];
         }
         return params;
     }
@@ -62,8 +83,19 @@ class Product extends DBItem {
     constructor(id, params)
     {
         this.table = 'Products';
-        this.cols = ['title', 'category', 'manufacturer', 'price', 'image'];
+        this.cols = ['title', 'manufacturer', 'price', 'image', 'description'];
         super(id, params);
+    }
+    getCategories(callback)
+    {
+        function f(objs) {
+            callback(objs.map(x => x.props.category));
+        }
+        catobj = new ProdCategory();
+        if (this.id)
+            catobj.selectMany('prodid', this.id, f);
+        else
+            catobj.selectMany(f);
     }
 }
 class Purchase extends DBItem {
@@ -71,6 +103,14 @@ class Purchase extends DBItem {
     {
         this.table = 'Purchases';
         this.cols = ['userid', 'prodid'];
+        super(id, params);
+    }
+}
+class ProdCategory extends DBItem {
+    constructor(id, params)
+    {
+        this.table = 'Categories';
+        this.cols = ['prodid', 'category'];
         super(id, params);
     }
 }

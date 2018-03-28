@@ -1,5 +1,5 @@
-var express        =         require("express");
-var bodyParser     =         require("body-parser");
+var express        =         require('express');
+var bodyParser     =         require('body-parser');
 var session        =         require('express-session');
 var app            =         express();
 
@@ -11,10 +11,10 @@ app.set('view engine', 'pug');
 var session;
 app.get('/',function(req,res){
     session = req.session;
-    res.render("views/login.html");
+    res.render('views/login.html');
     if(session.user){
         //do something
-        console.log("welcome back mah dude");
+        console.log('welcome back mah dude');
     }
 });
 app.get('/home', function (req, res) {
@@ -38,8 +38,8 @@ app.get('/logout',function(req,res) {
     });
 });
 app.use(function(request, response) {
-    response.status(404).send("Page not found!");
+    response.status(404).send('Page not found!');
     });
 app.listen(8043,function(){
-    console.log("Started on PORT 8043");
+    console.log('Started on PORT 8043');
 });

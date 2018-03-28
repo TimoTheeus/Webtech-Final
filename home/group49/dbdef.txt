@@ -11,10 +11,10 @@ CREATE TABLE Users(
 CREATE TABLE Products(
    id integer,
    title varchar(100) not null,
-   category varchar(50), --must be moved if items need more than one category (which they probably do)
    manufacturer varchar(50),
    price integer,
    image varchar(50),
+   description varchar(200),
    PRIMARY KEY (id)
 );
 
@@ -24,5 +24,13 @@ CREATE TABLE Purchases(
    prodid integer,
    PRIMARY KEY (id),
    FOREIGN KEY (userid) REFERENCES Users(id)
+   FOREIGN KEY (prodid) REFERENCES Products(id)
+);
+
+CREATE TABLE Categories(
+   id integer,
+   prodid integer,
+   category varchar(50),
+   PRIMARY KEY (id),
    FOREIGN KEY (prodid) REFERENCES Products(id)
 );
