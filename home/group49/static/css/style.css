@@ -1,0 +1,47 @@
+nav {
+    position: sticky;
+    top:0 ;
+    overflow: auto;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    float: left;
+    border-right: 1px solid white;
+}
+
+nav li:last-child {
+    border-right: none;
+}
+
+nav li a {
+    display: block;
+    padding: 10px;
+    color: white;
+    background-color: black;
+    font-size: 17px;
+    font-family: "Lucida Console", Monaco, monospace;
+    text-decoration: none;
+}
+
+nav li a:hover {
+    background-color: #808080;
+    text-decoration: underline;
+}
+
+nav li a.active {
+    background-color: #2F4F4F;
+    text-decoration: none;
+    cursor: default;
+}
+p {
+    
+}
+footer {
+    font-size: 0.8em;
+}
