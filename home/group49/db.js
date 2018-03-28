@@ -1,11 +1,21 @@
 var db = new require('sqlite3').Database('data.db');
 
 class DBItem {
-    constructor(id, params, allowed) {
+    constructor(id, params, cols) {
         this.table = '';
         this.idName = 'id';
         this.id = id;
-        this.props = {};
+        if (!(Array.isArray(this.cols) && this.cols.length))
+            this.props = params || {};
+        else
+        {
+            Object.keys(params).forEach(key => {
+                if (this.cols.includes(key))
+                    this.props[key] = params[key];
+                else
+                    throw new Error(key + ' is not a column of ' + this.table);
+            });
+        }
     }
     select() {
         db.get('SELECT * FROM ? WHERE ? = ?;', this.table, this.idName, this.id, (err, row) =>
@@ -41,11 +51,27 @@ class DBItem {
     }
 }
 class User extends DBItem {
-    constructor(id, login, password, first_name, last_name, email)
+    constructor(id, params)
     {
-        super(id);
-        this.table = 'Users'
-        
+        this.table = 'Users';
+        this.cols = ['login', 'password', 'first_name', 'last_name', 'email'];
+        super(id, params);
+    }
+}
+class Product extends DBItem {
+    constructor(id, params)
+    {
+        this.table = 'Products';
+        this.cols = ['title', 'category', 'manufacturer', 'price', 'image'];
+        super(id, params);
+    }
+}
+class Purchase extends DBItem {
+    constructor(id, params)
+    {
+        this.table = 'Purchases';
+        this.cols = ['userid', 'prodid'];
+        super(id, params);
     }
 }
 function close() {
