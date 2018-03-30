@@ -3,4 +3,8 @@ html
   include includes/head.pug
   body
     include includes/header.pug
-    include includes/foot.pug
+    .imageContainer
+      a(href = '/')
+        img(src = 'images/homepage.jpg')
+      a.top-left#homepageHeader(href = '/') New Dress Shirts!
+    //include includes/foot.pug

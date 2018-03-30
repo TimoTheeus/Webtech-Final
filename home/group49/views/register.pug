@@ -3,9 +3,24 @@ html
     body
         include includes/header.pug
         h1 Create account
-        input#email(type = 'email' placeholder = 'EMAIL ADRESS')
-        br
-        input#password(type = 'password' placeholder = 'PASSWORD')
-        br
-        button#createButton Create
+        form(method = 'POST' id = 'createForm' action = '/create')
+            .inputDiv
+                label(for = 'firstName') First Name
+                br
+                input#firstName(name = 'firstName' type = 'text' placeholder = 'FIRST NAME' required)
+            .inputDiv
+                label(for = 'lastName') Last Name
+                br
+                input#lastName(name = 'lastName' type = 'text' placeholder = 'LAST NAME' required)
+            .inputDiv
+                label(for = 'email') Email
+                br
+                input#email(name = 'email' type = 'email' placeholder = 'EMAIL ADRESS' required)
+            .inputDiv
+                label(for = 'password') Password
+                br
+                input#password(name = 'password' type = 'password' placeholder = 'PASSWORD' required)
+            .inputDiv
+                button#createButton Create
         include includes/foot.pug
+    script(src="scripts/register.js")

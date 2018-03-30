@@ -1,13 +1,12 @@
 nav
     ul
-        li  
-            a(href = '/') Category1
-        li  
-            a(href = '/') Category2
-        li  
-            a(href = '/') Category3
-        li
-            div#loginDiv
-                img#profileButton(src = "images/profile.png")
+        li.navHeaders
+            #menDiv
+                a#men(href = '/') Men
+            #womenDiv
+                a#women(href = '/') Women
+    input(type = 'text' placeholder = 'Search')
+    img#profileButton(src = "images/profile.png")
+
 
 script(src="scripts/header.js")

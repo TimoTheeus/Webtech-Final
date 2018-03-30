@@ -13,20 +13,17 @@ app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-var sess;
+var session;
 app.get('/', function(req, res){
-  sess = req.session;
-  if(sess.email){
-      console.log("Session exists");
-  }
+    session = req.session;
   res.render('home', {
     title: 'Home'
   });
 });
 
 app.get('/profile', function(req, res){
-    sess = req.session;
-    if(sess.email){ // if a session exists
+    session = req.session;
+    if(session.email){ // if a session exists
         res.render('profile');
     }
     //else render the login page
@@ -35,19 +32,19 @@ app.get('/profile', function(req, res){
             title: 'Login'
         });
     }
-
 });
-app.get('/create', function(req, res){
+
+app.get('/register', function(req, res){
     res.render('register');
 });
+
 app.post('/login',function(req,res){
-    sess = req.session;
-    //In this we are assigning email to sess.email variable.
-    //email comes from HTML page.
-    //if login success
+    session = req.session;
+
+    //if valid login
     if(true){
-    sess.email = req.body.email;
-    res.end('login success');
+        session.email = req.body.email;
+        res.end('login success');
     }
     else{
         res.end('login failure');
@@ -55,11 +52,25 @@ app.post('/login',function(req,res){
 
 
 });
-app.post('/register',function(req,res){
-    var email =req.body.email;
+
+app.post('/create',function(req,res){
+    var firstName =req.body.firstName;
+    var lastName = req.body.lastName;
+    var email = req.body.email;
     var password = req.body.password;
-    res.end('registered');
+    //Do something with the data
+    console.log(firstName + ' ' + lastName);
+    //log in
+    session = req.session;
+    session.email = req.body.email;
+    res.redirect('/profile');
+
 });
 
+app.get('/logout',function(req,res) {
+    req.session.destroy();
+    res.redirect('/');
+    console.log("logged out");
+});
 app.listen(8043);
 console.log("server started on port 8043");

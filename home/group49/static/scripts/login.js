@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function() {
     var email,pass;
     $("#loginButton").click(function(){
         email=$("#email").val();
