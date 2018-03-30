@@ -1,11 +1,11 @@
 html
-    head
-        title= title
+    include includes/head.pug
     body
-        h1= 'Please log in or make account'
-        input#user(type = 'text' placeholder = 'Username')
+        include includes/header.pug
+        h1 Create account
+        input#email(type = 'email' placeholder = 'EMAIL ADRESS')
         br
-        input#password(type = 'text' placeholder = 'Password')
+        input#password(type = 'password' placeholder = 'PASSWORD')
         br
-        button#loginButton Log in
-        a#Register(href = '/') Register
+        button#createButton Create
+        include includes/foot.pug
