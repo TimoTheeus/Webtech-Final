@@ -14,9 +14,9 @@ app.get('/', function(req, res){
   });
 });
 
-app.get('/loginPage', function(req, res){
+app.get('/profile', function(req, res){
   res.render('login', {
-    title: 'Home'
+    title: 'Login'
   });
 });
 app.listen(8043);

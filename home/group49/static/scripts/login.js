@@ -1,3 +1,8 @@
 function move() {
-    window.location.href = '/loginPage'
+    window.location.href = '/profile'
   }
+  $( document ).ready(function() {
+    $( "#profileButton" ).click(function() {
+      move();
+    });
+});
