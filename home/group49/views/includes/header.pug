@@ -1,12 +1,13 @@
 nav
-    ul
-        li.navHeaders
-            #menDiv
-                a#men(href = '/') Men
-            #womenDiv
-                a#women(href = '/') Women
-    input(type = 'text' placeholder = 'Search')
-    img#profileButton(src = "images/profile.png")
+    .navLeft
+        img#homeButton(src = "images/home.png")
+    .navHeaders
+        a#men(href = '/men') Men
+        a#women(href = '/women') Women
+    .navRight    
+        input#searchBar(type = 'text' placeholder = 'Search')
+        img#profileButton(src = "images/profile.png")
+        img#cartButton(src = "images/cart.png")
 
 
 script(src="scripts/header.js")

@@ -8,7 +8,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 var staticPath = path.resolve(__dirname, "static");
 app.set('view engine', 'pug');
-app.use(session({secret: 'ssshhhhh'}));
+app.use(session({secret: 'secret'}));
 app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -20,7 +20,17 @@ app.get('/', function(req, res){
     title: 'Home'
   });
 });
+app.get('/men', function(req, res){
+    res.render('men',{
+        categories:menCategories
+    });
+});
 
+app.get('/women', function(req, res){
+    res.render('women',{
+        categories:menCategories
+    });
+});
 app.get('/profile', function(req, res){
     session = req.session;
     if(session.email){ // if a session exists
@@ -37,7 +47,11 @@ app.get('/profile', function(req, res){
 app.get('/register', function(req, res){
     res.render('register');
 });
-
+const menCategories = ['sweaters','pants'];
+//get shopping cart and load using session variables
+app.get('/cart', function(req, res){
+    res.render('cart');
+});
 app.post('/login',function(req,res){
     session = req.session;
 
@@ -71,6 +85,12 @@ app.get('/logout',function(req,res) {
     req.session.destroy();
     res.redirect('/');
     console.log("logged out");
+});
+
+
+//throw 404, keep as last route
+app.get('*', function(req, res){
+    res.send('404 PAGE NOT FOUND', 404);
 });
 app.listen(8043);
 console.log("server started on port 8043");

@@ -9,11 +9,7 @@ nav {
     border-bottom:2px solid black;
     height:50px;
     box-shadow: 0px 0px 15px 0px rgba(0,0,0,1);
-}
-nav #profileButton{
-    position:absolute;
-    top:6px;
-    right: 10px;
+    z-index: 1;
 }
 nav ul{
     margin: 0;
@@ -36,21 +32,19 @@ h2{
     align-items: center;
     justify-content: center;
 }
-.navButtons{
 
-}
 .top-left {
     position: absolute;
     top: 10%;
     left: 5%;
 }
-nav li {
+nav {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 
-nav li a {
+nav a {
     float:left;
     padding:14px 16px;
     color: black;
@@ -58,28 +52,26 @@ nav li a {
     font-family: "Montserrat",Helvetica,Arial,sans-serif;
     text-decoration: none;
 }
-
-nav li a:hover {
+nav a.active{
+    background-color:black;
+    color:white;
+}
+nav a:hover {
 
     text-decoration: underline;
 }
-
-nav li a.active {
-    background-color: #2F4F4F;
-    text-decoration: none;
-    cursor: default;
+.navLeft{
+    position:relative;
+    float:left;
 }
-nav input {
+.navRight {
     position:absolute;
-    right:50px;
-    top:10px;
-    padding: 6px;
-    margin-right: 16px;
-    font-size: 17px;
+    float:right;
+    font-size:17px;
+    top: 6px;
+    right: 10px;
 }
-p {
-    
-}
+
 .hidden{
     display:none;
 }
@@ -89,10 +81,22 @@ p {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+#homeButton{
+    width:40px;
+    height: 40px;  
+    cursor: pointer;
+    margin-left:20px;
+    margin-top:4px;
+}
 #profileButton{
     width:40px;
     height: 40px;  
     cursor: pointer;
+}
+#cartButton{
+    width:40px;
+    height: 40px;  
+    cursor: pointer;  
 }
 #homepageHeader{
     font-family: "Merriweather", Times, "Times New Roman", serif;
@@ -109,6 +113,12 @@ p {
     border: 3px solid beige;
     color:black;
     cursor: pointer;
+}
+#searchBar{
+    padding:7px;
+    position:relative;
+    float:left;
+    margin:2px;
 }
 footer {
     font-size: 0.8em;
