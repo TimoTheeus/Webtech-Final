@@ -3,11 +3,13 @@ html
     body
         include includes/header.pug
         h1 Please log in or make a new account
-        input#email(type = 'email' placeholder = 'EMAIL ADRESS')
-        br
-        input#password(type = 'password' placeholder = 'PASSWORD')
-        br
-        button#loginButton Log in
+        form
+            .inputDiv
+                input#email(type = 'email' placeholder = 'EMAIL ADRESS')
+            .inputDiv
+                input#password(type = 'password' placeholder = 'PASSWORD')
+            .inputDiv
+                input(type = 'submit' value = 'Log in' onclick = 'login();return false')
         a#Register(href = '/register') Create Account
         include includes/foot.pug
     script(src="scripts/login.js")

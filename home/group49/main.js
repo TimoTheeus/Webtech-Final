@@ -8,7 +8,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 var staticPath = path.resolve(__dirname, "static");
 app.set('view engine', 'pug');
-app.use(session({secret: 'secret'}));
+app.use(session({secret: 'ssshhhhhh'}));
 app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 var session;
 app.get('/', function(req, res){
     session = req.session;
+    session.cart = [];
   res.render('home', {
     title: 'Home'
   });
@@ -52,19 +53,26 @@ const menCategories = ['sweaters','pants'];
 app.get('/cart', function(req, res){
     res.render('cart');
 });
-app.post('/login',function(req,res){
-    session = req.session;
+app.get('/men/:categories', function (req, res) {
+    res.send(req.params.categories);
+});
+app.get('/men/:categories/:prodId', function (req, res) {
+    var id = req.params.prodId;
+    res.send(req.params);
+});
 
+app.get('/login',function(req,res){
+    session = req.session;
+    let email = req.query.email;
+    let password = req.query.pass;
     //if valid login
     if(true){
-        session.email = req.body.email;
-        res.end('login success');
+        session.email = email;
+        res.send('login success');
     }
     else{
-        res.end('login failure');
+        res.send('login failure');
     }
-
-
 });
 
 app.post('/create',function(req,res){
