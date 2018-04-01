@@ -71,9 +71,14 @@ nav a:hover {
     top: 6px;
     right: 10px;
 }
-
+.error{
+    color:red;
+}
 .hidden{
     display:none;
+}
+.show{
+    display:block;
 }
 .centered{
     position: absolute;

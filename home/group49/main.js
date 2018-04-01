@@ -61,17 +61,18 @@ app.get('/men/:categories/:prodId', function (req, res) {
     res.send(req.params);
 });
 
-app.get('/login',function(req,res){
+app.post('/login',function(req,res){
     session = req.session;
-    let email = req.query.email;
-    let password = req.query.pass;
+    let email = req.body.email;
+    let password = req.body.pass;
     //if valid login
     if(true){
         session.email = email;
-        res.send('login success');
+        console.log(session.email);
+        res.send('success');
     }
     else{
-        res.send('login failure');
+        res.send('failure');
     }
 });
 

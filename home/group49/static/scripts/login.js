@@ -5,9 +5,12 @@ function login(){
         /*
         * Perform some validation here.
         */
-        $.get( "/login",{email:email,pass:pass}, function( data ) {
-            if(data == 'login success'){
+        $.post( "/login",{email:email,pass:pass}, function( data ) {
+            if(data == 'success'){
                 window.location.href = '/profile';
+            }
+            else if(data == 'failure'){
+                $('#errorMsg').addClass('show');
             }
         });
 };
