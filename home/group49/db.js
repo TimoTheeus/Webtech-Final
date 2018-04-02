@@ -21,27 +21,21 @@ class DBItem {
         db.get('SELECT * FROM ? WHERE ? = ?;', this.table, this.idName, this.id, (err, row) => {
             if (row) 
                 Object.keys(row).forEach(key => if (key != this.idName) this.props[key] = row[key];
-            // TEST THIS
             callback.call(this); 
         });
     }
     selectMany(prop, value, callback)
-    {
-        function f(err, rows, cur) {
+    {    
+        db.all('SELECT * FROM ? WHERE ? = ?;', this.table, this[prop], this.value, (err, rows) => {
             var result = [];
             if (rows)
                 result = rows.map(row => {
-                    var id = row[cur.idName];
-                    delete row[cur.idName];
-                    result.push(new cur.constructor(id, row));
-                });
-            // FIX THIS
-            (callback || prop)(result);
-        }
-        if (typeof prop == 'string')
-            db.all('SELECT * FROM ? WHERE ? = ?;', this.table, this[prop], this.value, (err, rows) => f(err, rows, this));
-        else
-            db.all('SELECT * FROM ?', this.table, (err, rows) => f(err, rows, this));
+                    var id = row[this.idName];
+                    delete row[this.idName];
+                    result.push(new this.constructor(id, row));
+            });
+            callback(result);
+        });
         
     }
     insert() {
@@ -88,14 +82,8 @@ class Product extends DBItem {
     }
     getCategories(callback)
     {
-        function f(objs) {
-            callback(objs.map(x => x.props.category));
-        }
         catobj = new ProdCategory();
-        if (this.id)
-            catobj.selectMany('prodid', this.id, f);
-        else
-            catobj.selectMany(f);
+        catobj.selectMany('prodid', this.id, objs => callback(objs.map(x => x.props.category)));
     }
 }
 class Purchase extends DBItem {
@@ -112,6 +100,10 @@ class ProdCategory extends DBItem {
         this.table = 'Categories';
         this.cols = ['prodid', 'category'];
         super(id, params);
+    }
+    getCategories(callback)
+    {
+        db.all('SELECT DISTINCT category FROM ?', this.table, objs => callback(objs.map(x => x.props.category)));
     }
 }
 function close() {

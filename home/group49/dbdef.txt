@@ -12,7 +12,7 @@ CREATE TABLE Products(
    id integer,
    title varchar(100) not null,
    manufacturer varchar(50),
-   price integer,
+   price real,
    image varchar(50),
    description varchar(200),
    PRIMARY KEY (id)
