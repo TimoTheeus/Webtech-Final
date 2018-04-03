@@ -26,7 +26,7 @@ class DBItem {
     }
     selectMany(prop, value, callback)
     {    
-        db.all('SELECT * FROM ? WHERE ? = ?;', this.table, this[prop], this.value, (err, rows) => {
+        db.all('SELECT * FROM ? WHERE ? = ?;', this.table, this[prop], value, (err, rows) => {
             var result = [];
             if (rows)
                 result = rows.map(row => {
