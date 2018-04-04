@@ -53,7 +53,7 @@ class DBItem {
     insert(callback) {
         var placeholders = '(?' + ', ?'.repeat(this.props.length - 1) + ')';
         db.run('INSERT INTO ? ' + placeholders + ' VALUES ' + placeholders + ';', this._params(true), err => {
-            if (!err && callback) db.get('SELECT MAX(?) FROM ?', this.idName, this.table, (err, row) => {
+            if (!err && callback) db.get('SELECT last_insert_rowid() FROM ?', this.table, (err, row) => {
                 if (row) this.id = row[idName];
                 callback(this);
             });
