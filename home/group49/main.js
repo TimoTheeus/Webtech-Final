@@ -12,7 +12,9 @@ app.use(session({secret: 'ssshhhhhh'}));
 app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-var db = require('./db');
+
+const menCategories = ['All Products','Hoodies & Jackets','Pants','Shorts','Swimwear','T'];
+
 var session;
 app.get('/', function(req, res){
     session = req.session;
@@ -48,7 +50,6 @@ app.get('/profile', function(req, res){
 app.get('/register', function(req, res){
     res.render('register');
 });
-const menCategories = ['sweaters','pants'];
 //get shopping cart and load using session variables
 app.get('/cart', function(req, res){
     res.render('cart');
@@ -56,7 +57,15 @@ app.get('/cart', function(req, res){
 app.get('/men/:categories', function (req, res) {
     res.send(req.params.categories);
 });
-app.get('/men/:categories/:prodId', function (req, res) {
+
+app.get('/men/brands/:brands', function (req, res) {
+    res.send(req.params.brands);
+});
+
+app.get('/men/brands/:brands', function (req, res) {
+    res.send(req.params.brands);
+});
+app.get('/product/:prodId', function (req, res) {
     var id = req.params.prodId;
     res.send(req.params);
 });
@@ -89,7 +98,7 @@ app.post('/create',function(req,res){
         last_name: lastName,
         email:email
     };
-    let user = new User('3',params);
+    //let user = new User('3',params);
     //user.insert();
     //Do something with the data
     console.log(firstName + ' ' + lastName);
