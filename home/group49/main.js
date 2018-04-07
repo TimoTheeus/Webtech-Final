@@ -12,7 +12,7 @@ app.use(session({secret: 'ssshhhhhh'}));
 app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
+var db = require('./db');
 var session;
 app.get('/', function(req, res){
     session = req.session;
@@ -79,8 +79,18 @@ app.post('/login',function(req,res){
 app.post('/create',function(req,res){
     var firstName =req.body.firstName;
     var lastName = req.body.lastName;
+    var username = req.body.username;
     var email = req.body.email;
     var password = req.body.password;
+    let params = {
+        login: username,
+        password: password,
+        first_name:firstName,
+        last_name: lastName,
+        email:email
+    };
+    let user = new User('3',params);
+    //user.insert();
     //Do something with the data
     console.log(firstName + ' ' + lastName);
     //log in
