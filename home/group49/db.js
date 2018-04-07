@@ -14,8 +14,7 @@ class DBItem {
         this.id = id; //the id number
         if (!(params && Array.isArray(this.cols) && this.cols.length))
             this.props = params || {}; //no cols (or params) specified, just use params directly
-        else //otherwise check if all the keys in params are a column, if not throw an error
-        {
+        else { //otherwise check if all the keys in params are a column, if not throw an error
             Object.keys(params).forEach(key => {
                 if (this.cols.includes(key))
                     this.props[key] = params[key];
@@ -35,8 +34,7 @@ class DBItem {
     }
     /*Select the row(s) where row[prop] = value, then create objects representing these rows.
     callback will be called with an array of the created objects as parameter.*/
-    selectMany(prop, value, callback)
-    {    
+    selectMany(prop, value, callback) {    
         db.all('SELECT * FROM ? WHERE ? = ?;', this.table, prop, value, (err, rows) => {
             var result = [];
             if (rows)
@@ -69,8 +67,7 @@ class DBItem {
     /*Help function to create the queries needed for insert and update.
     Has no use outside of these functions.
     insert is a bool specifying if it was called from insert (true) or update (false).*/
-    _params(var insert)
-    {
+    _params(var insert) {
         var params = [this.table];
         for (var i = 1; i <= this.cols.length; i++) {
             var i1, i2;
@@ -89,8 +86,7 @@ class DBItem {
 }
 //Represents a user, or a row in the Users table.
 class User extends DBItem {
-    constructor(id, params)
-    {
+    constructor(id, params) {
         this.cols = ['login', 'password', 'first_name', 'last_name', 'email'];
         super(id, params);
         this.table = 'Users'
@@ -98,42 +94,63 @@ class User extends DBItem {
 }
 //Represents a product, or a row in the Products table.
 class Product extends DBItem {
-    constructor(id, params)
-    {
+    constructor(id, params) {
         this.cols = ['title', 'manufacturer', 'price', 'image', 'description'];
         super(id, params);
         this.table = 'Products';
     }
     /*Get all the categories this product belongs to.
     callback will be called with an array of category names (strings) as parameter*/
-    getCategories(callback)
-    {
+    getCategories(callback) {
         catobj = new ProdCategory();
         catobj.selectMany('prodid', this.id, objs => callback(objs.map(x => x.props.category)));
     }
 }
 //Represents a purchase, or a row in the Purchases table.
 class Purchase extends DBItem {
-    constructor(id, params)
-    {
+    constructor(id, params) {
         this.cols = ['userid', 'prodid'];
         super(id, params);
         this.table = 'Purchases';
     }
 }
 //Represents a row in the Categories table.
+//Usually created like new ProdCategory() (without parameters) because individual rows don't have much value.
 class ProdCategory extends DBItem {
-    constructor(id, params)
-    {
+    constructor(id, params) {
         this.cols = ['prodid', 'category'];
         super(id, params);
         this.table = 'Categories';
     }
-    /*Get all categories that exist. Usually called like new ProdCategory().getCategories()
-    because it doesn't belong to a specific row. callback will be called with an array of category names (strings).*/    
-    getCategories(callback)
-    {
-        db.all('SELECT DISTINCT category FROM ?', this.table, objs => callback(objs.map(x => x.props.category)));
+    /*Get all categories that exist. callback will be called with an array of category names (strings).*/    
+    getCategories(callback) {
+        db.all('SELECT DISTINCT category FROM ?;', this.table, objs => callback(objs.map(x => x.category)));
+    }
+    /*Get all products that belong to the category given as the first argument.
+    callback will be called with an array of Products. sel is a boolean indicating if the properties of the
+    Products are important. If true, the select method will be called and all of the properties will be available.
+    Otherwise only the id will be available until you call select yourself. Because this method uses object properties,
+    don't call it twice on the same object unless you're sure it's been completed.*/
+    getItems(category, callback, sel) {
+        this.i = 0;
+        this.items = [];
+        this.callback = callback;
+        db.all('SELECT prodid FROM ? WHERE category = ?;', this.table, category, objs => {
+            this.length = objs.length;
+            for (var i = 0; i < this.length, i++) {
+                this.items[i] = new Product(objs[i].prodid);
+                if (sel) this.items[i].select(this._inc);
+            }
+            if (sel) this._inc();
+            else callback(this.items);
+        });
+    }
+    /*Help function that increases this.i when a Product.select call is done.
+    Once all calls are done, calls the callback function. Only for use in getItems.*/
+    _inc() {
+        this.i++;
+        if (this.i == this.length)
+            this.callback(this.items);
     }
 }
 //Closes the database. Call this when you are done with all the queries you wanted to do.
