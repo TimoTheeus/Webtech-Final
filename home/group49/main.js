@@ -2,13 +2,14 @@ var express = require('express');
 var path = require('path');
 var session = require('express-session');
 var bodyParser = require('body-parser');
+var db = require('./db.js');
 
 var app = express();
 
 app.set('views', path.join(__dirname, 'views'));
-var staticPath = path.resolve(__dirname, "static");
+var staticPath = path.resolve(__dirname, 'static');
 app.set('view engine', 'pug');
-app.use(session({secret: 'ssshhhhhh'}));
+app.use(session({secret: 'ssshhhhhh'})); //set resave and saveUninitialized
 app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -85,8 +86,8 @@ app.post('/login',function(req,res){
     }
 });
 
-app.post('/create',function(req,res){
-    var firstName =req.body.firstName;
+app.post('/create', function(req,res) {
+    var firstName = req.body.firstName;
     var lastName = req.body.lastName;
     var username = req.body.username;
     var email = req.body.email;
@@ -94,12 +95,12 @@ app.post('/create',function(req,res){
     let params = {
         login: username,
         password: password,
-        first_name:firstName,
+        first_name: firstName,
         last_name: lastName,
         email:email
     };
-    //let user = new User('3',params);
-    //user.insert();
+    let user = new db.User('3', params);
+    user.insert();
     //Do something with the data
     console.log(firstName + ' ' + lastName);
     //log in
@@ -118,7 +119,7 @@ app.get('/logout',function(req,res) {
 
 //throw 404, keep as last route
 app.get('*', function(req, res){
-    res.send('404 PAGE NOT FOUND', 404);
+    res.status(404).send('404 PAGE NOT FOUND');
 });
 app.listen(8043);
-console.log("server started on port 8043");
+console.log('server started on port 8043');
