@@ -1,5 +1,5 @@
 //This file is for interacting with the database.
-var sql = require('sqlite3');
+var sql = require('sqlite3').verbose();
 var db = new sql.Database('data.db');
 
 //The superclass of all db table classes. Do not use directly, use one of the subclasses instead.
@@ -39,6 +39,7 @@ class DBItem {
             callback(this); 
         });
     }
+
     /*Select the row(s) where row[prop] = value, then create objects representing these rows.
     callback will be called with an array of the created objects as parameter.*/
     selectMany(prop, value, callback) {
@@ -55,6 +56,24 @@ class DBItem {
                 });
                 callback(result);
             });
+    }
+    /*Select the row(s) where row[prop] = value, then create objects representing these rows.
+    callback will be called with an array of the created objects as parameter.*/
+    exists(prop, value, callback) {
+        if (this.cols.length && !this.cols.includes(prop))
+            console.log('No such prop: ' + prop);
+        else
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} = ?;`, value, (err, rows) => {
+                var result = [];
+        if (rows)
+            result = rows.map(row => {
+                var id = row[this.idName];
+        delete row[this.idName];
+        result.push(new this.constructor(id, row));
+    });
+        var bool = result.length>0;
+        callback(bool);
+    });
     }
     /*Inserts a row into the database with this object's properties as values. id is automatically decided.
     callback will be called with the current object as parameter, this.id will contain the generated id.*/

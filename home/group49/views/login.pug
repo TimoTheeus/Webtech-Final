@@ -4,11 +4,11 @@ html
         include includes/header.pug
         h1 Please log in or make a new account
         h3.hidden.error#errorMsg Username or password incorrect
-        form
+        form(id = 'loginForm' action = '/login')
             .inputDiv
-                input#email(type = 'email' placeholder = 'EMAIL ADRESS')
+                input#email(name ='email' type = 'email' placeholder = 'EMAIL ADRESS' required)
             .inputDiv
-                input#password(type = 'password' placeholder = 'PASSWORD')
+                input#password(name = 'password' type = 'password' placeholder = 'PASSWORD' required)
             .inputDiv
                 input(type = 'submit' value = 'Log in' onclick = 'login();return false')
         a#Register(href = '/register') Create Account

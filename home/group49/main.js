@@ -55,7 +55,7 @@ app.get('/register', function(req, res){
 app.get('/cart', function(req, res){
     res.render('cart');
 });
-app.get('/men/:categories', function (req, res) {
+app.get('/men/categories/:categories', function (req, res) {
     res.send(req.params.categories);
 });
 
@@ -63,7 +63,7 @@ app.get('/men/brands/:brands', function (req, res) {
     res.send(req.params.brands);
 });
 
-app.get('/men/brands/:brands', function (req, res) {
+app.get('/men/categories/:categories/brands/:brands', function (req, res) {
     res.send(req.params.brands);
 });
 app.get('/product/:prodId', function (req, res) {
@@ -74,11 +74,12 @@ app.get('/product/:prodId', function (req, res) {
 app.post('/login',function(req,res){
     session = req.session;
     let email = req.body.email;
-    let password = req.body.pass;
+    let password = req.body.password;
     //if valid login
     if(true){
         session.email = email;
         console.log(session.email);
+        console.log(password);
         res.send('success');
     }
     else{
@@ -87,27 +88,38 @@ app.post('/login',function(req,res){
 });
 
 app.post('/create', function(req,res) {
-    var firstName = req.body.firstName;
-    var lastName = req.body.lastName;
-    var username = req.body.username;
-    var email = req.body.email;
-    var password = req.body.password;
     let params = {
-        login: username,
-        password: password,
-        first_name: firstName,
-        last_name: lastName,
-        email:email
+        login: req.body.username,
+        password: req.body.password,
+        first_name: req.body.firstName,
+        last_name: req.body.lastName,
+        email:req.body.email
     };
     let user = new db.User('3', params);
-    user.insert();
-    //Do something with the data
-    console.log(firstName + ' ' + lastName);
-    //log in
-    session = req.session;
-    session.email = req.body.email;
-    res.redirect('/profile');
+    user.exists('login',params.login,function(bool){
+        if(bool){
+            console.log('login exists');
+            res.send('login exists');
+        }
+        else{
+            user.exists('email',params.email,function(bool){
+                if(bool){
+                    console.log('email exists');
+                    res.send('email exists');
 
+                }
+                else {
+                    user.insert();
+                    //Do something with the data
+                    console.log('inserted: ' + params.first_name + ' ' + params.last_name);
+                    //log in
+                    session = req.session;
+                    session.email = req.body.email;
+                    res.send('success');
+                }
+            });
+        }
+    });
 });
 
 app.get('/logout',function(req,res) {

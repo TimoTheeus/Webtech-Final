@@ -1,16 +1,18 @@
-function login(){  
-        var email,pass;
-        email=$("#email").val();
-        pass=$("#password").val();
-        /*
-        * Perform some validation here.
-        */
-        $.post( "/login",{email:email,pass:pass}, function( data ) {
-            if(data == 'success'){
-                window.location.href = '/profile';
-            }
-            else if(data == 'failure'){
-                $('#errorMsg').addClass('show');
+$(function() {
+    $('#loginForm').submit(function(){
+        $.ajax({
+            url: '/login',
+            type: 'POST',
+            data : $('#loginForm').serialize(),
+            success: function(response){
+                if(response == 'success'){
+                    window.location.href = '/profile';
+                }
+                else if(response == 'failure'){
+                    $('#errorMsg').addClass('show');
+                }
             }
         });
-};
+        return false;
+    });
+});

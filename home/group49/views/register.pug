@@ -1,9 +1,10 @@
 html
     include includes/head.pug
+    script(src="scripts/register.js")
     body
         include includes/header.pug
         h1 Create account
-        form(method = 'POST' id = 'createForm' action = '/create')
+        form(id = 'createForm' action = '/create')
             .inputDiv
                 label(for = 'firstName') First Name
                 br
