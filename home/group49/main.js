@@ -42,12 +42,12 @@ app.get('/profile', function(req, res){
     }
     //else render the login page
     else {
-        res.render('login', {
-            title: 'Login'
-        });
+        res.redirect('/signin');
     }
 });
-
+app.get('/signin', function(req, res){
+    res.render('login');
+});
 app.get('/register', function(req, res){
     res.render('register');
 });
