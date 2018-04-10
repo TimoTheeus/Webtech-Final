@@ -1,0 +1,167 @@
+CREATE TABLE Users(
+   id integer,
+   login varchar(25) not null,
+   password char(64) not null,
+   first_name varchar(50),
+   last_name varchar(50),
+   email varchar(50),
+   PRIMARY KEY (id)
+);
+
+CREATE TABLE Products(
+   id integer,
+   title varchar(100) not null,
+   brand varchar(30),
+   price real,
+   image varchar(50),
+   description varchar(200),
+   PRIMARY KEY (id)
+);
+
+CREATE TABLE Purchases(
+   id integer,
+   userid integer,
+   prodid integer,
+   PRIMARY KEY (id),
+   FOREIGN KEY (userid) REFERENCES Users(id)
+   FOREIGN KEY (prodid) REFERENCES Products(id)
+);
+
+CREATE TABLE Categories(
+   id integer,
+   category varchar(50),
+   PRIMARY KEY (id)
+);
+
+CREATE TABLE Prod_To_Cat(
+ prodid integer,
+ catid integer,
+ FOREIGN KEY (prodid) REFERENCES Products(id)
+ FOREIGN KEY (catid) REFERENCES Categories(id)
+);
+
+INSERT INTO Users VALUES
+(1, 'admin', '8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918', 'Admin', 'Admin', 'admin@hotmail.com'),
+(2, 'john2', 'EF92B778BAFE771E89245B89ECBC08A44A4E166C06659911881F383D4473E94F', 'John', 'Doe', 'john.doe@gmail.com');
+
+
+INSERT INTO Products VALUES
+(1,'Adidas Swimwear','Adidas',39.99,'images/products/women/swimwear/swimwearadidas.jpg','Adidas Performance Bikini'),
+(2,'Calvin Klein One Piece','Calvin Klein',50.00,'images/products/women/swimwear/swimwearcalvin.jpg','One piece Calvin Klein swimsuit'),
+(3,'Calvin Klein Bikini','Calvin Klein',50.00,'images/products/women/swimwear/swimwearcalvin2.jpg','Calvin Klein bikini'),
+(4,'Tommy Hilfiger Bikini','Tommy Hilfiger',50.00,'images/products/women/swimwear/swimweartommy.jpg','Bikini from Tommy Hilfiger'),
+(5,'Calvin Klein Bra','Calvin Klein',50.00,'images/products/women/underwear/bracalvin.jpg','Bra from Calvin Klein'),
+(6,'Tommy Hilfiger Bra','Tommy Hilfiger',50.00,'images/products/women/underwear/bratommy.jpg','Bra from Tommy Hilfiger'),
+(7,'Tommy Hilfiger Thong','Tommy Hilfiger',50.00,'images/products/women/underwear/thongtommy.jpg','Thong from Tommy Hilfiger'),
+(8,'Calvin Klein Thong','Calvin Klein',50.00,'images/products/women/underwear/thongcalvin.jpg','Thong from Calvin Klein'),
+(9,'Adidas Sweater','Adidas',50.00,'images/products/women/sweaters/sweateradidas.jpg','Comfy Adidas Sweater'),
+(10,'Sweater Mango','Sweater',50.00,'images/products/women/sweaters/sweatermango.jpg','Stylish sweater from Mango'),
+(11,'Shirt G-star','G-star',50.00,'images/products/women/shirts/shirtgstar.jpg','Blue shirt G-star'),
+(12,'Shirt Adidas','Adidas',50.00,'images/products/women/shirts/shirtadidas.jpg','Pink shirt Adidas'),
+(13,'Levis Jeans Skinny','Levis',50.00,'images/products/women/jeans/jeanslevisslim.jpg','Skinny jeans by Levis'),
+(14,'Mango Jeans Skinny','Mango',50.00,'images/products/women/jeans/jeansmangoslim.jpg','Blue skinny jeans by Mango'),
+(15,'Gina Tricot Jeans','Gina Tricot',50.00,'images/products/women/jeans/jeansgina.jpg','Stylish jeans by Gina Tricot'),
+(16,'Gina Tricot Jacket','Gina Tricot',50.00,'images/products/women/jackets/jacketgina.jpg','Green jacket by Gina Tricot'),
+(17,'G-star bomber Jacket','G-star',50.00,'images/products/women/jackets/jacketgstar.jpg','Black bomberjack from G-star'),
+(18,'Gina Tricot Hoodie','Gina Tricot',50.00,'images/products/women/hoodies/hoodieginatricot.jpg','Grey hoodie Gina Tricot'),
+(19,'Levis Hoodie','Levis',50.00,'images/products/women/hoodies/hoodielevis.jpg','White hoodie Levis'),
+(20,'Levis Hoodie','Levis',50.00,'images/products/women/hoodies/hoodielevis2.jpg','Black hoodie Levis'),
+(21,'Adidas Backpack','Adidas',50.00,'images/products/accessories/backpacks/bagadidas.jpg','Pink Adidas backpack'),
+(22,'Adidas Backpack','Adidas',50.00,'images/products/accessories/backpacks/bagadidas2.jpg','Grey Adidas backpack'),
+(23,'Calvin Klein Backpack','Calvin Klein',50.00,'images/products/accessories/backpacks/bagcalvin.jpg','Black Calvin Klein backpack'),
+(24,'Levis Backpack','Levis',50.00,'images/products/accessories/backpacks/baglevis.jpg','Red and Blue Levis backpack'),
+(25,'Tommy Hilfiger Backpack','Tommy Hilfiger',50.00,'images/products/accessories/backpacks/bagtommy.jpg','Fashionable Tommy Hilfiger backpack'),
+(26,'Levis Beanie','Levis',50.00,'images/products/accessories/hats/beanilevis.jpg','Levis Beanie'),
+(27,'Adidas Cap','Adidas',50.00,'images/products/accessories/hats/capadidas.jpg','Pink Adidas cap'),
+(28,'Calvin Klein Cap','Calvin Klein',50.00,'images/products/accessories/hats/capcalvin.jpg','White Calvin Klein cap'),
+(29,'Levis Cap','Levis',50.00,'images/products/accessories/hats/caplevis.jpg','White Levis cap'),
+(30,'Tommy Hilfiger Cap','Tommy Hilfiger',50.00,'images/products/accessories/hats/captommy.jpg','Green Tommy Hilfiger cap'),
+(31,'Tommy Hilfiger Cap','Tommy Hilfiger',50.00,'images/products/accessories/hats/captommy2.jpg','Blue Tommy Hilfiger cap'),
+(32,'Adidas Hoodie','Adidas',50.00,'images/products/men/hoodies/hoodieadidas.jpg','Green Adidas hoodie'),
+(33,'YOURTURN Hoodie','YOURTURN',50.00,'images/products/men/hoodies/hoodieyourturn.jpg','Grey hoodie from YOURTURN'),
+(34,'Jacket Mango','Mango',50.00,'images/products/men/jackets/jacketmango.jpg','Brown Jacket from Mango'),
+(35,'Jacket YOURTURN','YOURTURN',50.00,'images/products/men/jackets/jacketyourturn.jpg','Black jacket from YOURTURN'),
+(36,'Jacket Pier One','Pier One',50.00,'images/products/men/jackets/jacketpierone.jpg','Blue jacket Pier One'),
+(37,'Jeans G-star','G-star',50.00,'images/products/men/jeans/jeansgstar.jpg','Blue G-star jeans'),
+(38,'Jeans G-star','G-star',50.00,'images/products/men/jeans/jeansgstar2.jpg','Loose light-blue G-star jeans'),
+(39,'Jeans Pier One','Pier One',50.00,'images/products/men/jeans/jeanspierone.jpg','Slim fit jeans from Pier One'),
+(40,'Shirt Levis','Levis',50.00,'images/products/men/shirts/shirtlevis.jpg','Shirt from Levis'),
+(41,'Shirt Adidas','Adidas',50.00,'images/products/men/shirts/shirtadidas.jpg','Black Adidas shirt'),
+(42,'Shirt Tommy Hilfiger','Tommy Hilfiger',50.00,'images/products/men/shirts/shirttommy.jpg','Blue shirt from Tommy Hilfiger'),
+(43,'Shirt Tommy Jeans','Tommy Jeans',50.00,'images/products/men/shirts/shirttommyjeansslim.jpg','Slim fit Tommy Jeans shirt'),
+(44,'Sweater Casual Friday','Casual Friday',50.00,'images/products/men/sweaters/slimsweatercasualfriday.jpg','Slim sweater from Casual Friday'),
+(45,'Sweater Tommy Jeans','Tommy Jeans',50.00,'images/products/men/sweaters/slimsweatertommyjeans.jpg','Slim sweater from Tommy Jeans'),
+(46,'Sweater Mango','Mango',50.00,'images/products/men/sweaters/sweatermango.jpg','Blue sweater from Mango'),
+(47,'Björn Borg Underwear','Björn Borg',50.00,'images/products/men/underwear/uwearbjorn.jpg','Björn Borg underwear'),
+(48,'Calvin Klein Underwear','Calvin Klein',50.00,'images/products/men/underwear/uwearcalvin.jpg','Black Calvin Klein underwear'),
+(49,'Calvin Klein Swimming pants','Calvin Klein',50.00,'images/products/men/swimwear/swimcalvin.jpg','Black Calvin Klein swimming pants'),
+(50,'Pier One Swimming pants','Pier One',50.00,'images/products/men/swimwear/swimpierone.jpg','Red Pier One swimming pants'),
+(51,'Tommy Hilfiger Swimming pants','Tommy Hilfiger',50.00,'images/products/men/swimwear/swimtommy.jpg','Blue Tommy Hilfiger swimming pants');
+
+INSERT INTO Categories VALUES
+(1,'Men'),
+(2,'Women'),
+(3,'Accessories),
+(4,'Jeans'),
+(5,'Shirts'),
+(6,'Sweaters'),
+(7,'Underwear'),
+(8,'Slim Fit'),
+(9, 'Hoodies'),
+(10,'Backpacks & Bags'),
+(11,'Hats'),
+(12,'Swimwear'),
+(13,'Jackets');
+
+INSERT INTO Prod_To_Cat
+(1,2),(1,12),
+(2,2),(2,12),
+(3,2),(3,12),
+(4,2),(4,12),
+(5,2),(5,7),
+(6,2),(6,7),
+(7,2),(7,7),
+(8,2),(8,7),
+(9,2),(9,6),
+(10,2),(10,6),
+(11,2),(11,5),
+(12,2),(12,5),
+(13,2),(13,4),(13,8),
+(14,2),(14,4),(14,8),
+(15,2),(15,4),
+(16,2),(16,13),
+(17,2),(17,13),
+(18,2),(18,9),
+(19,2),(19,9),
+(20,2),(20,9),
+(21,3),(21,10),
+(22,3),(22,10),
+(23,3),(23,10),
+(24,3),(24,10),
+(25,3),(25,10),
+(26,3),(26,11),
+(27,3),(27,11),
+(28,3),(28,11),
+(29,3),(29,11),
+(30,3),(30,11),
+(31,3),(31,11),
+(32,1),(32,9),
+(33,1),(33,9),
+(34,1),(34,13),
+(35,1),(35,13),
+(36,1),(36,13),
+(37,1),(37,4),
+(38,1),(38,4),
+(39,1),(39,4),(39,8),
+(40,1),(40,5),
+(41,1),(41,5),
+(42,1),(42,5),
+(43,1),(43,5),(43,8),
+(44,1),(44,6),(44,8),
+(45,1),(45,6),(45,8),
+(46,1),(46,6),
+(47,1),(47,7),
+(48,1),(48,7),
+(49,1),(49,12),
+(50,1),(50,12),
+(51,1);(51,12);
