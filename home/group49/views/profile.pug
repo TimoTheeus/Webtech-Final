@@ -4,12 +4,17 @@ html
         include includes/header.pug
         h1 Account details and order history
         .customerInfo
-            h3 Name
-            p.email Email
-            .adress
-                p Street
-                p City and Country
-                p postal code
+            p First Name:
+                span#first_name Timo
+            p Last Name:
+                span#last_name van Milligen
+            p Username:
+                span#username Teeto
+            p.email Email: 
+                span#email t.milligen@students.uu.nl
+            p Password: Link here to change password
+            a#history(href= 'javascript:void(0);') History
+        button#edit Edit Profile    
         button#logout Log out
         include includes/foot.pug
     script(src="scripts/profile.js")
