@@ -34,3 +34,10 @@ CREATE TABLE Categories(
    PRIMARY KEY (id),
    FOREIGN KEY (prodid) REFERENCES Products(id)
 );
+CREATE TABLE Brands(
+   id integer,
+   prodid integer,
+   brand varchar(50),
+   PRIMARY KEY (id),
+   FOREIGN KEY (prodid) REFERENCES Products(id)
+);

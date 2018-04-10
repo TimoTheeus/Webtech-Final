@@ -3,7 +3,7 @@ INSERT INTO Users VALUES
 (2, 'john2', 'EF92B778BAFE771E89245B89ECBC08A44A4E166C06659911881F383D4473E94F', 'John', 'Doe', 'john.doe@gmail.com');
 
 INSERT INTO Products VALUES
-(1, 'BOSS Green Men''s Pixel D_backpack Backpack', 'Hugo Boss', 175.92, 'greenmenpixel.png', 'The BOSS Green Pixel backpack is an effortlessly stylish piece to add to your accessories collection. The spacious. branded backpack is detailed with a main compartment and front pocket with zip fastenings detailed with signature green trims. Carry it using the adjustable padded shoulder straps.');
+(1, 'Hugo Boss Backpack', 'Hugo Boss', 175.92, 'images/products/hugobackpack.png', 'The BOSS Green Pixel backpack is an effortlessly stylish piece to add to your accessories collection. The spacious. branded backpack is detailed with a main compartment and front pocket with zip fastenings detailed with signature green trims. Carry it using the adjustable padded shoulder straps.');
 
 INSERT INTO Categories VALUES
 (1, 1, 'Men'),
