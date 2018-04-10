@@ -41,9 +41,10 @@ app.get('/women', function(req, res){
     });
 });
 app.get('/profile', function(req, res){
-    session = req.session;
-    if(session.uid){ // if a session exists
-        res.render('profile');
+    if(req.session.uid) { // if a session exists
+        new db.User(req.session.uid).select(function(user) {
+            res.render('profile', user.props);
+        });
     }
     //else render the login page
     else {

@@ -4,14 +4,14 @@ html
         include includes/header.pug
         h1 Account details and order history
         .customerInfo
-            p First Name:
-                span#first_name Timo
-            p Last Name:
-                span#last_name van Milligen
-            p Username:
-                span#username Teeto
+            p First Name: 
+                span#first_name #{first_name}
+            p Last Name: 
+                span#last_name #{last_name}
+            p Username: 
+                span#username #{login}
             p.email Email: 
-                span#email t.milligen@students.uu.nl
+                span#email #{email}
             p Password: Link here to change password
             a#history(href= 'javascript:void(0);') History
         button#edit Edit Profile    
