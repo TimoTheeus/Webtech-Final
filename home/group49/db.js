@@ -17,16 +17,17 @@ class DBItem {
         this.propNames = [];
         this.propValues = [];
         //propNames and propValues contain the same information as props but in a different format
-        var i = 0;
-        Object.keys(params).forEach(key => {
-            if (cols.includes(key)) {
-                this.props[key] = params[key];
-                this.propNames[i] = key;
-                this.propValues[i] = params[key];
-                i++;
-            } else
-                throw new Error(key + ' is not a column of ' + this.table);
-        });
+        if (typeof params == 'object') {
+            var i = 0;
+            Object.keys(params).forEach(key => {
+                if (cols.includes(key)) {
+                    this.props[key] = params[key];
+                    this.propNames[i] = key;
+                    this.propValues[i] = params[key];
+                    i++;
+                } else throw new Error(key + ' is not a column of ' + this.table);
+            });
+        }
     }
     /*Select the row with the id specified in the constructor, and change this.props to the properties of this row.
     callback will be called when this is finished with the changed object as parameter.*/
@@ -52,28 +53,26 @@ class DBItem {
                     result = rows.map(row => {
                         var id = row[this.idName];
                         delete row[this.idName];
-                        result.push(new this.constructor(id, row));
+                        return new this.constructor(id, row);
                 });
                 callback(result);
+                
             });
     }
-    /*Select the row(s) where row[prop] = value, then create objects representing these rows.
-    callback will be called with an array of the created objects as parameter.*/
-    exists(prop, value, callback) {
+    /*Like selectMany, but will only select the first result row.
+    callback will be called with the single created object or undefined if no rows were selected.*/
+    selectSingle(prop, value, callback) {
         if (this.cols.length && !this.cols.includes(prop))
             console.log('No such prop: ' + prop);
         else
-            db.all(`SELECT * FROM ${this.table} WHERE ${prop} = ?;`, value, (err, rows) => {
-                var result = [];
-        if (rows)
-            result = rows.map(row => {
-                var id = row[this.idName];
-        delete row[this.idName];
-        result.push(new this.constructor(id, row));
-    });
-        var bool = result.length>0;
-        callback(bool);
-    });
+            db.get(`SELECT * FROM ${this.table} WHERE ${prop} = ?;`, value, (err, row) => {
+                if (row) {
+                    var id = row[this.idName];
+                    delete row[this.idName];
+                    callback(new this.constructor(id, row));
+                }
+                else callback();
+            });
     }
     /*Inserts a row into the database with this object's properties as values. id is automatically decided.
     callback will be called with the current object as parameter, this.id will contain the generated id.*/

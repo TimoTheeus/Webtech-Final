@@ -3,6 +3,7 @@ var path = require('path');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var db = require('./db.js');
+var shajs = require('sha.js');
 
 var app = express();
 
@@ -15,6 +16,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 const menCategories = ['All Products','Hoodies & Jackets','Pants','Shorts','Swimwear','T'];
+
+function encrypt(s) {
+    return shajs('sha256').update(s).digest('hex');
+}
 
 var session;
 app.get('/', function(req, res){
@@ -31,13 +36,13 @@ app.get('/men', function(req, res){
 });
 
 app.get('/women', function(req, res){
-    res.render('women',{
+    res.render('women', {
         categories:menCategories
     });
 });
 app.get('/profile', function(req, res){
     session = req.session;
-    if(session.email){ // if a session exists
+    if(session.uid){ // if a session exists
         res.render('profile');
     }
     //else render the login page
@@ -75,47 +80,44 @@ app.post('/login',function(req,res){
     session = req.session;
     let email = req.body.email;
     let password = req.body.password;
-    //if valid login
-    if(true){
-        session.email = email;
-        console.log(session.email);
-        console.log(password);
-        res.send('success');
-    }
-    else{
-        res.send('failure');
-    }
+    
+    new db.User().selectSingle('email', email, function(user) {
+        //if valid login
+        if (user && user.props.password == encrypt(password)) {
+            session.uid = user.id;
+            console.log(email);
+            console.log(password);
+            res.send('success');
+        } else res.send('failure');
+    });
 });
 
 app.post('/create', function(req,res) {
     let params = {
         login: req.body.username,
-        password: req.body.password,
+        password: encrypt(req.body.password),
         first_name: req.body.firstName,
         last_name: req.body.lastName,
-        email:req.body.email
+        email: req.body.email
     };
     let user = new db.User('3', params);
-    user.exists('login',params.login,function(bool){
-        if(bool){
+    user.selectSingle('login', params.login, function(a) {
+        if (a) {
             console.log('login exists');
             res.send('login exists');
-        }
-        else{
-            user.exists('email',params.email,function(bool){
-                if(bool){
+        } else {
+            user.selectSingle('email', params.email, function(b) {
+                if (b) {
                     console.log('email exists');
                     res.send('email exists');
-
-                }
-                else {
-                    user.insert();
-                    //Do something with the data
-                    console.log('inserted: ' + params.first_name + ' ' + params.last_name);
-                    //log in
-                    session = req.session;
-                    session.email = req.body.email;
-                    res.send('success');
+                } else {
+                    user.insert(function(user) {
+                        //Do something with the data
+                        console.log('inserted: ' + params.first_name + ' ' + params.last_name);
+                        //log in
+                        req.session.uid = user.id;
+                        res.send('success');
+                    });
                 }
             });
         }
