@@ -74,14 +74,14 @@ app.get('/product/:prodId', function (req, res) {
 
 app.post('/login',function(req,res){
     session = req.session;
-    let email = req.body.email;
+    let login = req.body.login;
     let password = req.body.password;
     
-    new db.User(null, {email: email}).selectSingle('email', function(user) {
+    new db.User(null, {login: login}).selectSingle('login', function(user) {
         //if valid login
         if (user && user.props.password == encrypt(password)) {
             session.uid = user.id;
-            console.log(email);
+            console.log(login);
             console.log(password);
             res.send('success');
         } else res.send('failure');

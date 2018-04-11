@@ -71,8 +71,7 @@ class DBItem {
                     var id = row[this.idName];
                     delete row[this.idName];
                     callback(new this.constructor(id, row));
-                }
-                else callback();
+                } else callback();
             });
     }
     /*Inserts a row into the database with this object's properties as values. id is automatically decided.
@@ -102,6 +101,14 @@ class DBItem {
     }
 }
 
+//Represents the ProdToCat table. Only used for connecting Category objects with Product objects, so no need to export.
+class ProdToCat extends DBItem {
+    constructor(id, params) {
+        super(id, params, ['prodid', 'catid']);
+        this.table = 'ProdToCat';
+    }
+}
+
 module.exports = {
     //Represents a user, or a row in the Users table.
     User: class extends DBItem {
@@ -119,8 +126,8 @@ module.exports = {
         /*Get all the categories this product belongs to.
         callback will be called with an array of category names (strings) as parameter*/
         getCategories(callback) {
-            catobj = new ProdCategory();
-            catobj.selectMany('prodid', this.id, objs => callback(objs.map(x => x.props.category)));
+            catobj = new ProdCategory(null, {prodid: this.id});
+            catobj.selectMany('prodid', objs => callback(objs.map(x => x.props.category)));
         }
     },
     //Represents a purchase, or a row in the Purchases table.
@@ -131,10 +138,9 @@ module.exports = {
         }
     },
     //Represents a row in the Categories table.
-    //Usually created like new ProdCategory() (without parameters) because individual rows don't have much value.
-    ProdCategory: class extends DBItem {
+    Category: class extends DBItem {
         constructor(id, params) {
-            super(id, params, ['prodid', 'category']);
+            super(id, params, ['category']);
             this.table = 'Categories';
         }
         /*Get all categories that exist. callback will be called with an array of category names (strings).*/    
@@ -156,10 +162,10 @@ module.exports = {
                 if (i == length)
                     callback(items);
             }
-            db.all(`SELECT prodid FROM ${this.table} WHERE category = ?;`, category, objs => {
+            new ProdToCat(null, {catid: this.id}).selectMany('catid', objs => {
                 length = objs.length;
                 for (var j = 0; j < length; j++) {
-                    items[j] = new Product(objs[j].prodid);
+                    items[j] = new Product(objs[j].props.prodid);
                     if (sel) items[j].select(f);
                 }
                 if (sel) f();
