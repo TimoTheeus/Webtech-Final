@@ -29,20 +29,19 @@ app.get('/', function(req, res){
     title: 'Home'
   });
 });
-app.get('/men/', function(req, res){
-    res.render('men',{
-        categories:[]
-    });
+app.get('/men/browse', function(req, res){
+    var cats = JSON.parse(req.query.categories);
+    res.send(req.query.categories);
 });
 
 app.get('/men', function(req, res){
-    res.render('men',{
+    res.render('prodbrowser',{
         categories:menCategories
     });
 });
 
 app.get('/women', function(req, res){
-    res.render('women', {
+    res.render('prodbrowser', {
         categories:menCategories
     });
 });

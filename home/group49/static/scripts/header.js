@@ -1,5 +1,5 @@
 $(function() {
-  $('a[href="/' + location.pathname.split('/').pop() + '"]').addClass('active');
+  $('a[href="/' + location.pathname.split('/')[1] + '"]').addClass('active');
   $( "#homeButton" ).click(function() {
     window.location.href = '/'
   });
