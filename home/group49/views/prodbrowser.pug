@@ -1,0 +1,9 @@
+html
+    include includes/head.pug
+    body
+        include includes/header.pug
+        ul
+            each val in categories
+                li
+                    a.category(name =val href = 'javascript:void(0);')=val
+    script(src = 'scripts/selector.js')
