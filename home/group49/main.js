@@ -29,6 +29,12 @@ app.get('/', function(req, res){
     title: 'Home'
   });
 });
+app.get('/men/', function(req, res){
+    res.render('men',{
+        categories:[]
+    });
+});
+
 app.get('/men', function(req, res){
     res.render('men',{
         categories:menCategories
@@ -61,17 +67,7 @@ app.get('/register', function(req, res){
 app.get('/cart', function(req, res){
     res.render('cart');
 });
-app.get('/men/categories/:categories', function (req, res) {
-    res.send(req.params.categories);
-});
 
-app.get('/men/brands/:brands', function (req, res) {
-    res.send(req.params.brands);
-});
-
-app.get('/men/categories/:categories/brands/:brands', function (req, res) {
-    res.send(req.params.brands);
-});
 app.get('/product/:prodId', function (req, res) {
     var id = req.params.prodId;
     res.send(req.params);
