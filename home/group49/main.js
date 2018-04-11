@@ -82,7 +82,7 @@ app.post('/login',function(req,res){
     let email = req.body.email;
     let password = req.body.password;
     
-    new db.User().selectSingle('email', email, function(user) {
+    new db.User(null, {email: email}).selectSingle('email', function(user) {
         //if valid login
         if (user && user.props.password == encrypt(password)) {
             session.uid = user.id;
@@ -93,36 +93,64 @@ app.post('/login',function(req,res){
     });
 });
 
-app.post('/create', function(req,res) {
-    let params = {
-        login: req.body.username,
-        password: encrypt(req.body.password),
-        first_name: req.body.firstName,
-        last_name: req.body.lastName,
-        email: req.body.email
-    };
-    let user = new db.User('3', params);
-    user.selectSingle('login', params.login, function(a) {
+/*Inserts the user in the database. callback will be called with:
+'login exists' if there is already a user with the same username in the database
+'email exists' if there is already a user with the same email
+'success' if the user was inserted into the database, with the user id as second parameter*/
+function insertUser(params, callback) {
+    let user = new db.User(null, params);
+    console.log(params.login);
+    user.selectSingle('login', function(a) {
         if (a) {
             console.log('login exists');
-            res.send('login exists');
+            callback('login exists');
         } else {
-            user.selectSingle('email', params.email, function(b) {
+            user.selectSingle('email', function(b) {
                 if (b) {
                     console.log('email exists');
-                    res.send('email exists');
+                    callback('email exists');
                 } else {
                     user.insert(function(user) {
                         //Do something with the data
-                        console.log('inserted: ' + params.first_name + ' ' + params.last_name);
-                        //log in
-                        req.session.uid = user.id;
-                        res.send('success');
+                        console.log('inserted: ' + params.first_name + ' ' + params.last_name + ' ' + user.id);
+                        callback('success', user.id);
                     });
                 }
             });
         }
     });
+}
+
+app.post('/create', function(req,res) {
+    req.body.password = encrypt(req.body.password);
+    insertUser(req.body, function(mes, id) {
+        if (id) req.session.uid = id;
+        res.send(mes);
+    });
+});
+
+app.post('/editprofile', function(req, res) {
+    var id = req.session.uid;
+    if (id) {
+        new db.User(id).select(function(user) {
+            user.delete(function() {
+                req.body.password = user.props.password;
+                console.log(req.body);
+                insertUser(req.body, function(s, id2) {
+                    console.log(user);
+                    if (s != 'success') {
+                        user.insert(function(user) {
+                            req.session.uid = user.id;
+                            res.redirect('/profile');
+                        });
+                    } else {
+                        req.session.uid = id2;
+                        res.redirect('/profile');
+                    }
+                });
+            });
+        });
+    }
 });
 
 app.get('/logout',function(req,res) {

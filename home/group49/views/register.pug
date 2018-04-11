@@ -6,13 +6,13 @@ html
         h1 Create account
         form(id = 'createForm' action = '/create')
             .inputDiv
-                label(for = 'firstName') First Name
+                label(for = 'first_name') First Name
                 br
-                input#firstName(name = 'firstName' type = 'text' placeholder = 'FIRST NAME' required)
+                input#firstName(name = 'first_name' type = 'text' placeholder = 'FIRST NAME' required)
             .inputDiv
-                label(for = 'lastName') Last Name
+                label(for = 'last_name') Last Name
                 br
-                input#lastName(name = 'lastName' type = 'text' placeholder = 'LAST NAME' required)
+                input#lastName(name = 'last_name' type = 'text' placeholder = 'LAST NAME' required)
             .inputDiv
                 label(for = 'email') Email
                 br
@@ -20,7 +20,7 @@ html
             .inputDiv
                 label(for = 'username') Username
                 br
-                input#username(name = 'username' type = 'text' placeholder = 'USERNAME' required)
+                input#username(name = 'login' type = 'text' placeholder = 'USERNAME' required)
             .inputDiv
                 label(for = 'password') Password
                 br

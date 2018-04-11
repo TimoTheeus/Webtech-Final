@@ -13,21 +13,22 @@ class DBItem {
         this.table = ''; //the table name
         this.idName = 'id'; //the name of the id column in the database
         this.id = id; //the id number
-        this.props = {};
+        //this.propNames and this.propValues contain the same information as this.props, but in a different format.
         this.propNames = [];
         this.propValues = [];
-        //propNames and propValues contain the same information as props but in a different format
-        if (typeof params == 'object') {
-            var i = 0;
+        this.props = new Proxy({}, {set: (obj, key, value) => {
+            if (!(key in obj)) {
+                this.propNames.push(key);
+                this.propValues.push(value);
+            }
+            obj[key] = value;
+            return true;
+        }});
+        if (typeof params == 'object')
             Object.keys(params).forEach(key => {
-                if (cols.includes(key)) {
-                    this.props[key] = params[key];
-                    this.propNames[i] = key;
-                    this.propValues[i] = params[key];
-                    i++;
-                } else throw new Error(key + ' is not a column of ' + this.table);
+                if (cols.includes(key)) this.props[key] = params[key];
+                else throw new Error(key + ' is not a column of ' + this.table);
             });
-        }
     }
     /*Select the row with the id specified in the constructor, and change this.props to the properties of this row.
     callback will be called when this is finished with the changed object as parameter.*/
@@ -41,13 +42,13 @@ class DBItem {
         });
     }
 
-    /*Select the row(s) where row[prop] = value, then create objects representing these rows.
-    callback will be called with an array of the created objects as parameter.*/
-    selectMany(prop, value, callback) {
-        if (this.cols.length && !this.cols.includes(prop))
+    /*Select the row(s) where row[prop] = this.props[prop] (given in constructor), then create objects representing
+    these rows. callback will be called with an array of the created objects as parameter.*/
+    selectMany(prop, callback) {
+        if (!this.props[prop])
             console.log('No such prop: ' + prop);
         else
-            db.all(`SELECT * FROM ${this.table} WHERE ${prop} = ?;`, value, (err, rows) => {
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} = ?;`, this.props[prop], (err, rows) => {
                 var result = [];
                 if (rows)
                     result = rows.map(row => {
@@ -61,11 +62,11 @@ class DBItem {
     }
     /*Like selectMany, but will only select the first result row.
     callback will be called with the single created object or undefined if no rows were selected.*/
-    selectSingle(prop, value, callback) {
-        if (this.cols.length && !this.cols.includes(prop))
+    selectSingle(prop, callback) {
+        if (!this.props[prop])
             console.log('No such prop: ' + prop);
         else
-            db.get(`SELECT * FROM ${this.table} WHERE ${prop} = ?;`, value, (err, row) => {
+            db.get(`SELECT * FROM ${this.table} WHERE ${prop} = ?;`, this.props[prop], (err, row) => {
                 if (row) {
                     var id = row[this.idName];
                     delete row[this.idName];
@@ -78,21 +79,26 @@ class DBItem {
     callback will be called with the current object as parameter, this.id will contain the generated id.*/
     insert(callback) {
         var placeholders = '(?' + ', ?'.repeat(this.propValues.length - 1) + ')';
-        db.run(`INSERT INTO ${this.table} (${this.propNames.join(', ')}) VALUES ${placeholders};`, this.propValues, err => {
-            if (!err && callback) db.get(`SELECT last_insert_rowid() FROM ${this.table};`, this.table, (err, row) => {
-                if (row) this.id = row[idName];
-                callback(this);
-            });
+        var obj = this;
+        db.run(`INSERT INTO ${this.table} (${this.propNames.join(', ')}) VALUES ${placeholders};`, this.propValues, function() {
+            obj.id = this.lastID;
+            callback(obj);
         });
     }
     /*Updates the row with this.id as id to contain this object's properties.
-    No callback because the object isn't changed. (Although it could be added if needed.)*/
-    update() {
+    Callback is called without parameters when the action is complete.*/
+    update(callback) {
         if (this.propNames.length == 0) return;
         var placeholders = this.propNames[0] + ' = ?';
         for (var i = 0; i < this.propNames.length; i++)
             placeholders += `, ${propNames[i]} = ?`
-        db.run(`UPDATE ${this.table} SET ${placeholders} WHERE ${this.idName} = ?;`, this.propValues.concat([this.id]));
+        db.run(`UPDATE ${this.table} SET ${placeholders} WHERE ${this.idName} = ?;`, this.propValues.concat([this.id]),
+            (err, row) => callback());
+    }
+    /*Deletes the row with this.id as id from the database.
+    Callback is called without parameters when the action is complete.*/
+    delete(callback) {
+        db.run(`DELETE FROM ${this.table} WHERE ${this.idName} = ?;`, this.id, (err, row) => callback());
     }
 }
 
