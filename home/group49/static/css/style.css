@@ -14,6 +14,11 @@ nav {
 nav ul{
     margin: 0;
 }
+aside{
+    width: 300px;
+    position: absolute;
+    height: 100%;
+}
 h2{
     font-family: "Merriweather", Times, "Times New Roman", serif;
 
@@ -67,7 +72,7 @@ nav a:hover {
 .navRight {
     position:absolute;
     float:right;
-    font-size:17px;
+    font-size:17    px;
     top: 6px;
     right: 10px;
 }
@@ -85,6 +90,42 @@ nav a:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+.filterList{
+    padding:10px;
+    border:1px solid black;
+    width:150px;
+    list-style-type:none;  
+}
+.contentContainer{
+    position: relative;
+    height: 100%;
+}
+#productsContainer{
+    display: inline-block;
+    width: 80%;
+    margin-left:300px;
+}
+.product{
+    float:left;
+    margin-left:10px;
+    margin-top:10px;
+}
+.productImg{
+    width:300px;
+    
+}
+.title{
+    position:relative;
+    display: flex;
+    justify-content: center;
+    font-size:16px;
+}
+.price{
+    position:relative;
+    display: flex;
+    justify-content: center;
+    font-size:16px;
 }
 #homeButton{
     width:40px;
