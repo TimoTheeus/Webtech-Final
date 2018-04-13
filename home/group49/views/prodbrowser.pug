@@ -2,16 +2,20 @@ html
     include includes/head.pug
     body
         include includes/header.pug
-        h3 Categories
-        ul.catList
-            each val in categories
-                li
-                    input.category(name =val type = 'checkbox')
-                    a.category(name =val href = 'javascript:void(0);')=val
-        h3 Brands
-        ul.brandList
-            each val in brands
-                li
-                    input.brand(name =val type = 'checkbox')
-                    a.brand(name =val href = 'javascript:void(0);')=val        
+        .contentContainer
+            aside
+                h3 Categories:
+                ul.filterList.ctgryList
+                    each val in categories
+                        li
+                            input.category(name =val type = 'checkbox')
+                            a.category(name =val href = 'javascript:void(0);')=val
+                h3 Brands:
+                ul.filterList.brandList
+                    each val in brands
+                        li
+                            input.brand(name =val type = 'checkbox')
+                            a.brand(name =val href = 'javascript:void(0);')=val
+            #productsContainer
+
     script(src = 'scripts/selector.js')
