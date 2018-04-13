@@ -2,8 +2,16 @@ html
     include includes/head.pug
     body
         include includes/header.pug
-        ul
+        h3 Categories
+        ul.catList
             each val in categories
                 li
+                    input.category(name =val type = 'checkbox')
                     a.category(name =val href = 'javascript:void(0);')=val
+        h3 Brands
+        ul.brandList
+            each val in brands
+                li
+                    input.brand(name =val type = 'checkbox')
+                    a.brand(name =val href = 'javascript:void(0);')=val        
     script(src = 'scripts/selector.js')

@@ -57,7 +57,7 @@ INSERT INTO Products VALUES
 (7,'Tommy Hilfiger Thong','Tommy Hilfiger',50.00,'women/underwear/thongtommy.jpg','Thong from Tommy Hilfiger'),
 (8,'Calvin Klein Thong','Calvin Klein',50.00,'women/underwear/thongcalvin.jpg','Thong from Calvin Klein'),
 (9,'Adidas Sweater','Adidas',50.00,'women/sweaters/sweateradidas.jpg','Comfy Adidas Sweater'),
-(10,'Sweater Mango','Sweater',50.00,'women/sweaters/sweatermango.jpg','Stylish sweater from Mango'),
+(10,'Sweater Mango','Mango',50.00,'women/sweaters/sweatermango.jpg','Stylish sweater from Mango'),
 (11,'Shirt G-star','G-star',50.00,'women/shirts/shirtgstar.jpg','Blue shirt G-star'),
 (12,'Shirt Adidas','Adidas',50.00,'women/shirts/shirtadidas.jpg','Pink shirt Adidas'),
 (13,'Levis Jeans Skinny','Levis',50.00,'women/jeans/jeanslevisslim.jpg','Skinny jeans by Levis'),

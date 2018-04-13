@@ -15,8 +15,8 @@ app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-const menCategories = ['All Products','Hoodies & Jackets','Pants','Shorts','Swimwear','T'];
-
+const menCategories = ['Accessories','Jeans','Shirts','Sweaters','Underwear','Slim Fit','Hoodies','Backpacks','Hats','Swimwear','Jackets'];
+const brands = ['Adidas','Calvin Klein','Tommy Hilfiger','Mango','G-star','Levis','Gina Tricot','YOURTURN','Pier One','Tommy Jeans','Björn Borg'];
 function encrypt(s) {
     return shajs('sha256').update(s).digest('hex');
 }
@@ -31,12 +31,13 @@ app.get('/', function(req, res){
 });
 app.get('/men/browse', function(req, res){
     var cats = JSON.parse(req.query.categories);
-    res.send(req.query.categories);
+    res.send(req.query.categories + req.query.brands);
 });
 
 app.get('/men', function(req, res){
     res.render('prodbrowser',{
-        categories:menCategories
+        categories:menCategories,
+        brands: brands
     });
 });
 
