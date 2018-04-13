@@ -29,8 +29,23 @@ app.get('/', function(req, res){
   });
 });
 app.get('/men/browse', function(req, res){
-    var cats = JSON.parse(req.query.categories);
-    res.send(req.query.categories + req.query.brands);
+    let catgrs = JSON.parse(req.query.categories);
+    let brands = JSON.parse(req.query.brands);
+    var products = [{id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'2',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50}];
+    var string = JSON.stringify(products);
+    res.send(string);
 });
 
 app.get('/men', function(req, res){
@@ -46,7 +61,8 @@ app.get('/men', function(req, res){
 
 app.get('/women', function(req, res){
     res.render('prodbrowser', {
-        categories:menCategories
+        categories:menCategories,
+        brands:brands
     });
 });
 app.get('/profile', function(req, res){
@@ -70,10 +86,26 @@ app.get('/register', function(req, res){
 app.get('/cart', function(req, res){
     res.render('cart');
 });
-
-app.get('/product/:prodId', function (req, res) {
-    var id = req.params.prodId;
-    res.send(req.params);
+app.get('/cartItems',function(req,res){
+    res.send(session.cart);
+});
+app.get('/prodData',function(req,res){
+    var id = req.query.id;
+    new db.Product(req.query.id).select(function(prod){
+        res.send(prod.props);
+    });
+});
+app.get('/product', function (req, res) {
+    var id = req.query.id;
+    new db.Product(id).select(function(prod){
+        res.render('product',{
+            id:id,
+            title:prod.props.title,
+            price:prod.props.price,
+            description:prod.props.description,
+            path:prod.props.image
+        });
+    });
 });
 
 app.post('/login',function(req,res){
@@ -91,7 +123,11 @@ app.post('/login',function(req,res){
         } else res.send('failure');
     });
 });
-
+app.post('/removeFromCart',function(req,res){
+    let index = session.cart.indexOf(req.body.id);
+    session.cart.splice(index,1);
+    res.redirect('back');
+});
 /*Inserts the user in the database. callback will be called with:
 'login exists' if there is already a user with the same username in the database
 'email exists' if there is already a user with the same email
@@ -119,7 +155,12 @@ function insertUser(params, callback) {
         }
     });
 }
-
+app.post('/addToCart',function(req,res){
+    if(session.cart)
+        session.cart.push(req.body.id);
+    else session.cart = [req.body.id];
+    res.send('Items in cart: '+session.cart.length);
+});
 app.post('/create', function(req,res) {
     req.body.password = encrypt(req.body.password);
     insertUser(req.body, function(mes, id) {
