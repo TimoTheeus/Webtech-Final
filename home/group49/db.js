@@ -9,7 +9,7 @@ class DBItem {
     or leave both empty if you want to selectMany. cols contains an array with column names and
     is defined in the subclasses.*/
     constructor(id, params, cols) {
-        this.cols = Array.isArray(cols) ? cols : [];
+        this.cols = cols;
         this.table = ''; //the table name
         this.idName = 'id'; //the name of the id column in the database
         this.id = id; //the id number
@@ -41,7 +41,6 @@ class DBItem {
             callback(this); 
         });
     }
-
     /*Select the row(s) where row[prop] = this.props[prop] (given in constructor), then create objects representing
     these rows. callback will be called with an array of the created objects as parameter.*/
     selectMany(prop, callback) {
@@ -73,6 +72,14 @@ class DBItem {
                     callback(new this.constructor(id, row));
                 } else callback();
             });
+    }
+    /*Gets all possible values for a certain column in the table.
+    callback will be called with an array of values for that column.*/
+    getAll(prop, callback) {
+        if (!this.cols.includes(prop))
+            console.log('No such prop: ' + prop);
+        else
+            db.all(`SELECT DISTINCT ${prop} FROM ${this.table};`, (err, rows) => callback(rows.map(x => x[prop])));
     }
     /*Inserts a row into the database with this object's properties as values. id is automatically decided.
     callback will be called with the current object as parameter, this.id will contain the generated id.*/
@@ -120,7 +127,7 @@ module.exports = {
     //Represents a product, or a row in the Products table.
     Product: class extends DBItem {
         constructor(id, params) {
-            super(id, params, ['title', 'manufacturer', 'price', 'image', 'description']);
+            super(id, params, ['title', 'brand', 'price', 'image', 'description']);
             this.table = 'Products';
         }
         /*Get all the categories this product belongs to.
@@ -142,10 +149,6 @@ module.exports = {
         constructor(id, params) {
             super(id, params, ['category']);
             this.table = 'Categories';
-        }
-        /*Get all categories that exist. callback will be called with an array of category names (strings).*/    
-        getCategories(callback) {
-            db.all(`SELECT DISTINCT category FROM ${this.table};`, objs => callback(objs.map(x => x.category)));
         }
         /*Get all products that belong to the category given as the first argument.
         callback will be called with an array of Products. sel is a boolean indicating if the properties of the

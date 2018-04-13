@@ -35,10 +35,11 @@ app.get('/men/browse', function(req, res){
 });
 
 app.get('/men', function(req, res){
-    res.render('prodbrowser',{
-        categories:menCategories,
-        brands: brands
-    });
+    new db.Product().getAll('brand', brands => 
+        res.render('prodbrowser', {
+            categories:menCategories,
+            brands: brands
+        }));
 });
 
 app.get('/women', function(req, res){
