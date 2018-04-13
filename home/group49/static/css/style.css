@@ -115,6 +115,25 @@ nav a:hover {
     width:300px;
     
 }
+.cartPriceTag{
+    float:right;
+}
+.cartItem{
+    position:relative;
+    width:500px;
+    border:1px solid black;
+    margin-bottom:10px;
+    list-style-type: none;
+}
+.removeButton{
+    padding:5px;
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+}
+.cartImg{
+    width:80px;
+}
 .title{
     position:relative;
     display: flex;

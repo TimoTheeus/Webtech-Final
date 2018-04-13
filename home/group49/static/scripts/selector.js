@@ -26,7 +26,7 @@ $(function() {
             let products = JSON.parse(data);
             products.forEach(function(prod){
                 var prodObject = 
-                $('<div class = "product"><a href=/product/'+prod.id+'><img class ="productImg" src='+prod.image+'></a><br><a class = "title" href =/product/' +prod.id+'>'+prod.title+'</a><p class ="price">'+prod.price+'€</p></div>');
+                $('<div class = "product"><a href=/product?id='+prod.id+'><img class ="productImg" src=images/products/'+prod.image+'></a><br><a class = "title" href =/product/' +prod.id+'>'+prod.title+'</a><p class ="price">'+prod.price+'€</p></div>');
                 prodObject.appendTo($('#productsContainer'));
                 /*var container = document.createElement('div');
                 var img = document.createElement('img');
