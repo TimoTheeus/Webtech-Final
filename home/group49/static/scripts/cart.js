@@ -1,14 +1,15 @@
 $(function(){
     $.get('/cartItems', function(data){
-        data.forEach(function(id){
-            $.get('/prodData', {id:id},function(prodData){    
+        for(i=0;i<data.length;i++){
+            var id = data[i];
+            $.get('/prodData', {id:id},function(prodData){
                 console.log(prodData);
                 var removeAction = 'remove('+id+',this); ';
-                var prodObject =  $('<li class= "cartItem">'+prodData.title+'<span class = "cartPriceTag">'+prodData.price+'€'  
-                +'</span><br><img class = "cartImg" src= images/products/'+prodData.image+'><button onclick = '+removeAction+'class = "removeButton">Delete</button></li>');
+                var prodObject =  $('<li class= "cartItem">'+prodData.title+'<span class = "cartPriceTag">'+prodData.price+'€'
+                    +'</span><br><img class = "cartImg" src= images/products/'+prodData.image+'><button onclick = '+removeAction+'class = "removeButton">Delete</button></li>');
                 prodObject.appendTo($('#prodList'));
             });
-        });
+        }
     });
     $('#order').click(function(){
         if(confirm("Buy products?")){

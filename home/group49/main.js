@@ -88,6 +88,7 @@ app.get('/cart', function(req, res){
     res.render('cart');
 });
 app.get('/cartItems',function(req,res){
+    if(!req.session.cart) req.session.cart=[];
     res.send(session.cart);
 });
 app.get('/prodData',function(req,res){
@@ -110,14 +111,13 @@ app.get('/product', function (req, res) {
 });
 
 app.post('/login',function(req,res){
-    session = req.session;
     let login = req.body.login;
     let password = req.body.password;
     
     new db.User(null, {login: login}).selectSingle('login', function(user) {
         //if valid login
         if (user && user.props.password == encrypt(password)) {
-            session.uid = user.id;
+            req.session.uid = user.id;
             console.log(login);
             console.log(password);
             res.send('success');

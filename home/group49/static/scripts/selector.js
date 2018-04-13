@@ -4,6 +4,8 @@ $(function() {
     var categories = [mainCategory];
     var brands = [];
     var products = [];
+    $('.ctgryList').find('input[type=checkbox]:checked').removeAttr('checked');
+    $('.brandList').find('input[type=checkbox]:checked').removeAttr('checked');
     $('#showMore').click(function(e){
         page++;
         showProducts(page,products,false);
@@ -71,7 +73,12 @@ function showProducts(page,products,clearAll){
     }
     for(i=(page-1)*6;i<page*6;i++)
     {
-        prod = products[i];
+        if(i==(page-1)*6&&!products[i]){
+            alert('no more products to show for this selection');
+            return;
+        }
+        if(products[i])var prod = products[i];
+        else return;
         var prodObject = $('<div class = "product"><a href=/product?id='+prod.id+'><img class ="productImg" src=images/products/'+prod.image+'></a><br><a class = "title" href =/product/' +prod.id+'>'+prod.title+'</a><p class ="price">'+prod.price+'€</p></div>');
         prodObject.appendTo($('#productsContainer'));
     }
