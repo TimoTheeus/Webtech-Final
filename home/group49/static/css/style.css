@@ -158,6 +158,12 @@ nav a:hover {
     height: 40px;  
     cursor: pointer;
 }
+#showMore{
+    margin: -20px -50px; 
+    position:relative;
+    top:50%; 
+    left:50%;
+}
 #cartButton{
     width:40px;
     height: 40px;  

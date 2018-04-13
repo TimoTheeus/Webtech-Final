@@ -3,8 +3,13 @@ $(function() {
     let mainCategory = location.pathname.split('/')[1];
     var categories = [mainCategory];
     var brands = [];
-
+    var products = [];
+    $('#showMore').click(function(e){
+        page++;
+        showProducts(page,products,false);
+    });
     $( '.category').click(function(e) {
+        page = 1;
         //add a category to category array
         if(e.target.type == 'checkbox'){    
             if(e.target.checked)
@@ -23,25 +28,15 @@ $(function() {
         }
         var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&page='+page;
         $.get( url, function( data ) {
-            let products = JSON.parse(data);
-            products.forEach(function(prod){
-                var prodObject = 
-                $('<div class = "product"><a href=/product?id='+prod.id+'><img class ="productImg" src=images/products/'+prod.image+'></a><br><a class = "title" href =/product/' +prod.id+'>'+prod.title+'</a><p class ="price">'+prod.price+'€</p></div>');
-                prodObject.appendTo($('#productsContainer'));
-                /*var container = document.createElement('div');
-                var img = document.createElement('img');
-                img.src = prod.image;
-                var prodLink = document.createElement('a');
-                prodLink.href = '/product/' + prod.id;
-                prodLink.append(img);
-                container.append(prodLink);
-                $('#productsContainer').append(container);*/
+            products = JSON.parse(data);
+                showProducts(page,products,true);
             });
-        });
+        
         
     });
     $( '.brand').click(function(e) {
         //add a brand to brand array
+        page = 1;
         if(e.target.type == 'checkbox'){    
             if(e.target.checked)
                 brands.push(e.target.name);
@@ -58,7 +53,8 @@ $(function() {
         }
         var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&page='+page;
         $.get( url, function( data ) {
-            alert( "Data Loaded: " + data );
+            products = JSON.parse(data);
+            showProducts(page,products,true);
         });
     });
 });
@@ -68,4 +64,15 @@ function deleteFromArray(value,array){
         array.splice(index,1);
     }
     
+}
+function showProducts(page,products,clearAll){
+    if(clearAll){
+        document.getElementById('productsContainer').innerHTML = "";
+    }
+    for(i=(page-1)*6;i<page*6;i++)
+    {
+        prod = products[i];
+        var prodObject = $('<div class = "product"><a href=/product?id='+prod.id+'><img class ="productImg" src=images/products/'+prod.image+'></a><br><a class = "title" href =/product/' +prod.id+'>'+prod.title+'</a><p class ="price">'+prod.price+'€</p></div>');
+        prodObject.appendTo($('#productsContainer'));
+    }
 }

@@ -32,18 +32,19 @@ app.get('/men/browse', function(req, res){
     let catgrs = JSON.parse(req.query.categories);
     let brands = JSON.parse(req.query.brands);
     var products = [{id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'2',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'images/products/men/jeans/jeanspierone.jpg',title:'jeans',price:50}];
+    {id:'2',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'3',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},];
     var string = JSON.stringify(products);
     res.send(string);
 });
