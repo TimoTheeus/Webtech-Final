@@ -56,7 +56,23 @@ class DBItem {
                         return new this.constructor(id, row);
                 });
                 callback(result);
-                
+            });
+    }
+    /*Like selectMany, but give multiple options for the property's values instead of just one in the constructor.
+    All objects where the requested property is equal to one of the options will be selected.*/
+    selectManyOptions(prop, options, callback) {
+        if (!this.cols.includes(prop))
+            console.log('No such prop: ' + prop);
+        else
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} IN (?${', ?'.repeat(options.length - 1)});`, options, (err, row) => {
+                var result = [];
+                if (rows)
+                    result = rows.map(row => {
+                        var id = row[this.idName];
+                        delete row[this.idName];
+                        return new this.constructor(id, row);
+                });
+                callback(result);
             });
     }
     /*Like selectMany, but will only select the first result row.
@@ -165,11 +181,11 @@ module.exports = {
             super(id, params, ['category']);
             this.table = 'Categories';
         }
-        /*Get all products that belong to the category given as the first argument.
+        /*Get all products that belong to this category.
         callback will be called with an array of Products. sel is a boolean indicating if the properties of the
         Products are important. If true, the select method will be called and all of the properties will be available.
         Otherwise only the id will be available until you call select yourself.*/
-        getItems(category, callback, sel) {
+        getItems(callback, sel) {
             var i = 0;
             var items = [];
             var length = 0;
