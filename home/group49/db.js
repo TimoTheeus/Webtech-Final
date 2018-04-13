@@ -9,7 +9,7 @@ class DBItem {
     or leave both empty if you want to selectMany. cols contains an array with column names and
     is defined in the subclasses.*/
     constructor(id, params, cols) {
-        this.cols = Array.isArray(cols) ? cols : [];
+        this.cols = cols;
         this.table = ''; //the table name
         this.idName = 'id'; //the name of the id column in the database
         this.id = id; //the id number
@@ -41,7 +41,6 @@ class DBItem {
             callback(this); 
         });
     }
-
     /*Select the row(s) where row[prop] = this.props[prop] (given in constructor), then create objects representing
     these rows. callback will be called with an array of the created objects as parameter.*/
     selectMany(prop, callback) {
@@ -74,6 +73,14 @@ class DBItem {
                 } else callback();
             });
     }
+    /*Gets all possible values for a certain column in the table.
+    callback will be called with an array of values for that column.*/
+    getAll(prop, callback) {
+        if (!this.cols.includes(prop))
+            console.log('No such prop: ' + prop);
+        else
+            db.all(`SELECT DISTINCT ${prop} FROM ${this.table};`, (err, rows) => callback(rows.map(x => x[prop])));
+    }
     /*Inserts a row into the database with this object's properties as values. id is automatically decided.
     callback will be called with the current object as parameter, this.id will contain the generated id.*/
     insert(callback) {
@@ -85,7 +92,7 @@ class DBItem {
         });
     }
     /*Updates the row with this.id as id to contain this object's properties.
-    Callback is called without parameters when the action is complete.*/
+    callback is called without parameters when the action is complete.*/
     update(callback) {
         if (this.propNames.length == 0) return;
         var placeholders = this.propNames[0] + ' = ?';
@@ -95,7 +102,7 @@ class DBItem {
             (err, row) => callback());
     }
     /*Deletes the row with this.id as id from the database.
-    Callback is called without parameters when the action is complete.*/
+    callback is called without parameters when the action is complete.*/
     delete(callback) {
         db.run(`DELETE FROM ${this.table} WHERE ${this.idName} = ?;`, this.id, (err, row) => callback());
     }
@@ -106,6 +113,21 @@ class ProdToCat extends DBItem {
     constructor(id, params) {
         super(id, params, ['prodid', 'catid']);
         this.table = 'ProdToCat';
+    }
+    /*Selects all possible combinations of categories that exist on a single product.
+    callback is called with a result array of arrays, where every category id is mapped to
+    an array of category ids that it exists in combination with.*/
+    categoryCombs(callback) {
+        db.all(`SELECT DISTINCT A.catid AS a, B.catid AS b FROM ${this.table} AS A
+        JOIN ${this.table} AS B ON A.prodid = B.prodid AND A.catid <> B.catid;`, (err, rows) => {
+            var result = [];
+            rows.forEach(row => {
+                if (!result[row.a])
+                    result[row.a] = [row.b];
+                else result[row.a].push(row.b);
+            });
+            callback(result);
+        });
     }
 }
 
@@ -120,7 +142,7 @@ module.exports = {
     //Represents a product, or a row in the Products table.
     Product: class extends DBItem {
         constructor(id, params) {
-            super(id, params, ['title', 'manufacturer', 'price', 'image', 'description']);
+            super(id, params, ['title', 'brand', 'price', 'image', 'description']);
             this.table = 'Products';
         }
         /*Get all the categories this product belongs to.
@@ -143,10 +165,6 @@ module.exports = {
             super(id, params, ['category']);
             this.table = 'Categories';
         }
-        /*Get all categories that exist. callback will be called with an array of category names (strings).*/    
-        getCategories(callback) {
-            db.all(`SELECT DISTINCT category FROM ${this.table};`, objs => callback(objs.map(x => x.category)));
-        }
         /*Get all products that belong to the category given as the first argument.
         callback will be called with an array of Products. sel is a boolean indicating if the properties of the
         Products are important. If true, the select method will be called and all of the properties will be available.
@@ -159,18 +177,47 @@ module.exports = {
             Once all calls are done, calls the callback function.*/
             function f() {
                 i++;
-                if (i == length)
+                if (i == length + 1)
                     callback(items);
             }
             new ProdToCat(null, {catid: this.id}).selectMany('catid', objs => {
                 length = objs.length;
                 for (var j = 0; j < length; j++) {
-                    items[j] = new Product(objs[j].props.prodid);
+                    items[j] = new module.exports.Product(objs[j].props.prodid);
                     if (sel) items[j].select(f);
                 }
                 if (sel) f();
-                else callback(this.items); //no select calls to wait for, call callback directly
+                else callback(items); //no select calls to wait for, call callback directly
             });
+        }
+        /*Get all other categories that exist on the same product as this category.
+        callback will be called with an array of Categories. sel is the same as for getItems,
+        if it's false obj.props.category won't be available until you call select yourself.*/
+        getCombs(callback, sel) {
+            if (!this.id)
+                this.selectSingle('category', obj => obj.getCombs(callback));
+            else {
+                //Same structure for optional selecting as getItems.
+                //Copied to keep it within function scope and not have to use object variables.
+                var i = 0;
+                var items = [];
+                var length = 0;
+                function f() {
+                    i++;
+                    if (i == length + 1)
+                        callback(items);
+                }
+                new ProdToCat().categoryCombs(arr => {
+                    items = arr[this.id];
+                    length = items.length;
+                    for (var j = 0; j < length; j++) {
+                        items[j] = new module.exports.Category(items[j]);
+                        if (sel) items[j].select(f);
+                    }
+                    if (sel) f();
+                    else callback(items);
+                });
+            }
         }
     },
     //Closes the database. Call this when you are done with all the queries you wanted to do.
