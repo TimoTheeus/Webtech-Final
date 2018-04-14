@@ -64,7 +64,7 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
                 new db.Category(categories[j].id).getItems(function(items){
                     for(i=0;i<items.length;i++){
                         //push them to products array
-                        let inRange = (items[i].props.price>=priceLow&&items[i].props.price<=priceHigh)
+                        let inRange = (items[i].props.price>=priceLow&&items[i].props.price<priceHigh)
                         if(inRange&&(!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
                             items[i].props.id=items[i].id;
                             products.push(items[i].props);
