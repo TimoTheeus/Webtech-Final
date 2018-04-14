@@ -32,13 +32,10 @@ $(function() {
                 priceHigh= value*50;
                 reload();      
         }
-        console.log(priceLow);
-        console.log(priceHigh);
       }
       document.getElementById('order').onchange = function() {
         ordering = this.value;
         reload();
-        console.log(ordering);
       }
     $('#showMore').click(function(e){
         page++;
@@ -81,7 +78,6 @@ $(function() {
             e.target.parentNode.children[0].checked = true;
             brands = [e.target.name];
         }
-        console.log(brands);
         reload();
     });
 });

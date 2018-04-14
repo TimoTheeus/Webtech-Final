@@ -9,11 +9,9 @@ $(function() {
     });
     $('#edit').click(function() {
         if ($.contains(document, $info[0])) {
-            console.log('hi');
             $info.replaceWith($form);
             this.innerHTML = 'Cancel';
         } else {
-            console.log('bye');
             $form.replaceWith($info);
             this.innerHTML = 'Edit Profile';
         }
