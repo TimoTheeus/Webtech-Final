@@ -64,7 +64,7 @@ class DBItem {
         if (!this.cols.includes(prop))
             console.log('No such prop: ' + prop);
         else
-            db.all(`SELECT * FROM ${this.table} WHERE ${prop} IN (?${', ?'.repeat(options.length - 1)});`, options, (err, row) => {
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} IN (?${', ?'.repeat(options.length - 1)});`, options, (err, rows) => {
                 var result = [];
                 if (rows)
                     result = rows.map(row => {

@@ -29,24 +29,40 @@ app.get('/', function(req, res){
   });
 });
 app.get('/men/browse', function(req, res){
-    let catgrs = JSON.parse(req.query.categories);
-    let brands = JSON.parse(req.query.brands);
-    var products = [{id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'2',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'3',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
-    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},];
-    var string = JSON.stringify(products);
-    res.send(string);
+    var catgrs = JSON.parse(req.query.categories);
+    var brands = JSON.parse(req.query.brands);
+    catgrs.push('Men');
+    var products =[];
+    var amountDone = 0;//amount of categories done processing
+    var expectedDone;//expected amount
+    console.log(catgrs);
+    console.log(brands);
+    //get all categories
+    new db.Category().selectManyOptions('category',catgrs,function(categories){
+        if(!categories){
+            res.send(products);
+        }
+        expectedDone=categories.length;
+        for(j=0;j<categories.length;j++){
+            //for all items with these categories
+            new db.Category(categories[j].id).getItems(function(items){
+                for(i=0;i<items.length;i++){
+                    //push them to products array
+                    if(!brands.length>0||brands.includes(items[i].props.brand)){  
+                        items[i].props.id=items[i].id;
+                        products.push(items[i].props);
+                      //  console.log(items[i].props);
+                    }
+                }
+                amountDone++;
+                if(j==categories.length&&expectedDone==amountDone){
+                    console.log('printing');
+                    var string = JSON.stringify(products);
+                    res.send(string);
+                }
+            },true);
+        }
+    });  
 });
 
 app.get('/men', function(req, res){
