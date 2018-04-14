@@ -4,6 +4,19 @@ html
         include includes/header.pug
         .contentContainer
             aside
+                h3 Sorting:
+                ul#sortList.filterList
+                    li price range: 
+                        select#range
+                            option(value =0) 0-150€
+                            option(value =1) 0-50€
+                            option(value =2) 50-100€
+                            option(value =3) 100-150€
+                    li order by:
+                        br
+                        select#order
+                            option(value='title') Title             
+                            option(value='price') Price  
                 h3 Categories:
                 ul.filterList.ctgryList
                     each val in categories

@@ -6,15 +6,40 @@ $(function() {
     var products = [];
     var ordering = 'title';
     var priceLow = 0;
-    var priceHigh = 200;
-    //show all products of main category with default ordering etc.
+    var priceHigh = 150;
+    function reload(){
+        //show all products of main category with default ordering etc.
     var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&ordering='+ordering+'&priceLow='+priceLow+'&priceHigh='+priceHigh;
     $.get( url, function( data ) {
             products = JSON.parse(data);
             showProducts(page,products,true);
     });
+    }
+    reload();
     $('.ctgryList').find('input[type=checkbox]:checked').removeAttr('checked');
     $('.brandList').find('input[type=checkbox]:checked').removeAttr('checked');
+
+    document.getElementById('range').onchange = function() {
+        let value = this.value;
+        switch(value) {
+            case '0':
+                priceLow=0;
+                priceHigh=150;
+                break;   
+            default:
+                priceLow = (value-1)*50;
+                priceHigh= value*50;
+                
+        }
+        console.log(priceLow);
+        console.log(priceHigh);
+        reload();
+      }
+      document.getElementById('order').onchange = function() {
+        ordering = this.value;
+        reload();
+        console.log(ordering);
+      }
     $('#showMore').click(function(e){
         page++;
         showProducts(page,products,false);
@@ -37,11 +62,7 @@ $(function() {
             categories = [];
             categories.push(e.target.name);
         }
-        var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&ordering='+ordering+'&priceLow='+priceLow+'&priceHigh='+priceHigh;
-        $.get( url, function( data ) {
-            products = JSON.parse(data);
-            showProducts(page,products,true);
-            });
+        reload();
     });
     $( '.brand').click(function(e) {
         //add a brand to brand array
@@ -61,12 +82,7 @@ $(function() {
             brands = [e.target.name];
         }
         console.log(brands);
-        var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&ordering='+ordering+'&priceLow='+priceLow+'&priceHigh='+priceHigh;
-        $.get( url, function( data ) {
-            console.log('hey');
-            products = JSON.parse(data);
-            showProducts(page,products,true);
-        });
+        reload();
     });
 });
 function deleteFromArray(value,array){
