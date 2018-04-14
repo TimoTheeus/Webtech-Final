@@ -14,7 +14,11 @@ app.use(session({secret: 'ssshhhhhh'})); //set resave and saveUninitialized
 app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
+app.use(logger);
+function logger(req, res, next) {
+    console.log('%s %s', req.method, req.url);
+    next();
+}
 function encrypt(s) {
     return shajs('sha256').update(s).digest('hex');
 }
@@ -49,8 +53,6 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
     var amountDone = 0;//amount of categories done processing
     var expectedDone;//expected amount
     var mainQueryDone = false;
-    console.log(ctgrs);
-    console.log(brands);
     new db.Category(null, {category:mainCategory}).getItems(function(items){
         for(i=0; i<items.length; i++)
                 menProducts.push(items[i].id);
@@ -68,12 +70,10 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
                         if(inRange&&(!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
                             items[i].props.id=items[i].id;
                             products.push(items[i].props);
-                        //  console.log(items[i].props);
                         }
                     }
                     amountDone++;
                     if(j==categories.length&&expectedDone==amountDone){
-                        console.log('printing');
                         if(ordering=='price') products.sort(comparePrice);
                         else products.sort(compareTitle);
                         var string = JSON.stringify(products);
@@ -171,8 +171,6 @@ app.post('/login',function(req,res){
         //if valid login
         if (user && user.props.password == encrypt(password)) {
             req.session.uid = user.id;
-            console.log(login);
-            console.log(password);
             res.send('success');
         } else res.send('failure');
     });
@@ -189,11 +187,9 @@ app.post('/buyProducts',function(req,res){
         return res.send('empty cart');
     }
     for(i=0;i<session.cart.length;i++){
-       // console.log('bought: '+session.cart[i]);
         let params = {userid:req.session.uid,prodid:session.cart[i]};
         let purchase = new db.Purchase(null, params);
         purchase.insert(function(purchase){
-           console.log('inserted prod :' + params.prodid +' for user: '+ params.userid)
         });
         if(i==session.cart.length-1){
             res.send('success');
@@ -211,20 +207,16 @@ app.post('/buyProducts',function(req,res){
 'success' if the user was inserted into the database, with the user id as second parameter*/
 function insertUser(params, callback) {
     let user = new db.User(null, params);
-    console.log(params.login);
     user.selectSingle('login', function(a) {
         if (a) {
-            console.log('login exists');
             callback('login exists');
         } else {
             user.selectSingle('email', function(b) {
                 if (b) {
-                    console.log('email exists');
                     callback('email exists');
                 } else {
                     user.insert(function(user) {
                         //Do something with the data
-                        console.log('inserted: ' + params.first_name + ' ' + params.last_name + ' ' + user.id);
                         callback('success', user.id);
                     });
                 }
@@ -252,9 +244,7 @@ app.post('/editprofile', function(req, res) {
         new db.User(id).select(function(user) {
             user.delete(function() {
                 req.body.password = user.props.password;
-                console.log(req.body);
                 insertUser(req.body, function(s, id2) {
-                    console.log(user);
                     if (s != 'success') {
                         user.insert(function(user) {
                             req.session.uid = user.id;
@@ -273,7 +263,6 @@ app.post('/editprofile', function(req, res) {
 app.get('/logout',function(req,res) {
     req.session.destroy();
     res.redirect('/');
-    console.log("logged out");
 });
 
 
