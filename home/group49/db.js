@@ -111,10 +111,8 @@ class DBItem {
     search(prop, value, callback) {
         if (!this.cols.includes(prop))
             console.log('No such prop: ' + prop);
-        else if (!this.cols.includes(orderby))
-            console.log('No such prop: ' + orderby);
         else {
-            db.all(`SELECT * FROM ${this.table} WHERE ${prop} LIKE %?%`, value, (err, rows) => {
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} LIKE '%${value}%'`, (err, rows) => {
                 var result = [];
                 if (rows)
                     result = rows.map(row => {

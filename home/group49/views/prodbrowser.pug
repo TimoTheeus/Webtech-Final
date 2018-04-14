@@ -4,6 +4,10 @@ html
         include includes/header.pug
         .contentContainer
             aside
+                h3 Search Products
+                input#searchBar(type = 'text' placeholder = 'Search products..')
+                button#searchButton search
+                br
                 h3 Sorting:
                 ul#sortList.filterList
                     li price range: 

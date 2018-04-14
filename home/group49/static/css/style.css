@@ -191,7 +191,11 @@ nav a:hover {
     padding:7px;
     position:relative;
     float:left;
-    margin:2px;
+
+}
+#searchButton{
+    padding:4px;
+    font-size:15px;
 }
 footer {
     font-size: 0.8em;

@@ -41,6 +41,7 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
     let priceLow = req.query.priceLow;
     let priceHigh = req.query.priceHigh;
     let ordering = req.query.ordering;
+    let search = req.query.search;
     var menProducts =[];
     var mainCatId;
     if(ctgrs.length==0) {
@@ -53,6 +54,13 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
     var amountDone = 0;//amount of categories done processing
     var expectedDone;//expected amount
     var mainQueryDone = false;
+    var searchProducts = [];
+    if(search!='') {
+        new db.Product(null,{title:'title'}).search('title', search, function (items) {
+            for(i=0;i<items.length;i++)
+                searchProducts.push(items[i].id)
+        });
+    }
     new db.Category(null, {category:mainCategory}).getItems(function(items){
         for(i=0; i<items.length; i++)
                 menProducts.push(items[i].id);
@@ -67,7 +75,14 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
                     for(i=0;i<items.length;i++){
                         //push them to products array
                         let inRange = (items[i].props.price>=priceLow&&items[i].props.price<priceHigh)
-                        if(inRange&&(!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
+                        var inSearch;
+                        if(search==''){
+                            inSearch=true;
+                        }
+                        else{
+                            inSearch = searchProducts.includes(items[i].id);
+                        }
+                        if(inSearch&&inRange&&(!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){
                             items[i].props.id=items[i].id;
                             products.push(items[i].props);
                         }
