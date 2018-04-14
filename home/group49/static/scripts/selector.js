@@ -25,15 +25,15 @@ $(function() {
             case '0':
                 priceLow=0;
                 priceHigh=150;
+                reload();  
                 break;   
             default:
                 priceLow = (value-1)*50;
                 priceHigh= value*50;
-                
+                reload();      
         }
         console.log(priceLow);
         console.log(priceHigh);
-        reload();
       }
       document.getElementById('order').onchange = function() {
         ordering = this.value;

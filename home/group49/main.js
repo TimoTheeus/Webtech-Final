@@ -34,6 +34,9 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
     var ctgrs = JSON.parse(req.query.categories);
     var brands = JSON.parse(req.query.brands);
     var mainCategory = firstUpper(req.params[0]);
+    let priceLow = req.query.priceLow;
+    let priceHigh = req.query.priceHigh;
+    let ordering = req.query.ordering;
     var menProducts =[];
     var mainCatId;
     if(ctgrs.length==0) {
@@ -61,7 +64,8 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
                 new db.Category(categories[j].id).getItems(function(items){
                     for(i=0;i<items.length;i++){
                         //push them to products array
-                        if((!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
+                        let inRange = (items[i].props.price>=priceLow&&items[i].props.price<=priceHigh)
+                        if(inRange&&(!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
                             items[i].props.id=items[i].id;
                             products.push(items[i].props);
                         //  console.log(items[i].props);
@@ -70,6 +74,8 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
                     amountDone++;
                     if(j==categories.length&&expectedDone==amountDone){
                         console.log('printing');
+                        if(ordering=='price') products.sort(comparePrice);
+                        else products.sort(compareTitle);
                         var string = JSON.stringify(products);
                         res.send(string);
                     }
@@ -78,7 +84,20 @@ app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
         });
     });
 });
-
+function compareTitle(a,b) {
+    if (a.title < b.title)
+      return -1;
+    if (a.title > b.title)
+      return 1;
+    return 0;
+}
+function comparePrice(a,b) {
+    if (a.price < b.price)
+      return -1;
+    if (a.price > b.price)
+      return 1;
+    return 0;
+}
 app.get(/^\/((wo)?men|accessories)/, function(req, res){
     new db.Product().getAll('brand', brands => 
         new db.Category(null, {category: firstUpper(req.params[0])}).getCombs(categories =>
