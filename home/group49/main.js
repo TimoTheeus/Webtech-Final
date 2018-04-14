@@ -29,8 +29,24 @@ app.get('/', function(req, res){
   });
 });
 app.get('/men/browse', function(req, res){
-    var cats = JSON.parse(req.query.categories);
-    res.send(req.query.categories + req.query.brands);
+    let catgrs = JSON.parse(req.query.categories);
+    let brands = JSON.parse(req.query.brands);
+    var products = [{id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'2',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'3',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},
+    {id:'1',image:'men/jeans/jeanspierone.jpg',title:'jeans',price:50},];
+    var string = JSON.stringify(products);
+    res.send(string);
 });
 
 app.get('/men', function(req, res){
@@ -46,7 +62,8 @@ app.get('/men', function(req, res){
 
 app.get('/women', function(req, res){
     res.render('prodbrowser', {
-        categories:menCategories
+        categories:menCategories,
+        brands:brands
     });
 });
 app.get('/profile', function(req, res){
@@ -63,6 +80,15 @@ app.get('/profile', function(req, res){
 app.get('/signin', function(req, res){
     res.render('login');
 });
+app.get('/history',function(req,res){
+    res.render('history');
+});
+app.get('/historyItems',function(req,res){
+    var id = req.session.uid;
+    new db.Purchase(null,{userid:id}).selectMany('userid',function(purchases){
+        res.send(JSON.stringify(purchases));
+    });
+});
 app.get('/register', function(req, res){
     res.render('register');
 });
@@ -70,26 +96,69 @@ app.get('/register', function(req, res){
 app.get('/cart', function(req, res){
     res.render('cart');
 });
-
-app.get('/product/:prodId', function (req, res) {
-    var id = req.params.prodId;
-    res.send(req.params);
+app.get('/cartItems',function(req,res){
+    if(!req.session.cart) req.session.cart=[];
+    res.send(session.cart);
+});
+app.get('/prodData',function(req,res){
+    var id = req.query.id;
+    new db.Product(req.query.id).select(function(prod){
+        res.send(prod.props);
+    });
+});
+app.get('/product', function (req, res) {
+    var id = req.query.id;
+    new db.Product(id).select(function(prod){
+        res.render('product',{
+            id:id,
+            title:prod.props.title,
+            price:prod.props.price,
+            description:prod.props.description,
+            path:prod.props.image
+        });
+    });
 });
 
 app.post('/login',function(req,res){
-    session = req.session;
     let login = req.body.login;
     let password = req.body.password;
     
     new db.User(null, {login: login}).selectSingle('login', function(user) {
         //if valid login
         if (user && user.props.password == encrypt(password)) {
-            session.uid = user.id;
+            req.session.uid = user.id;
             console.log(login);
             console.log(password);
             res.send('success');
         } else res.send('failure');
     });
+});
+app.post('/removeFromCart',function(req,res){
+    let index = session.cart.indexOf(req.body.id);
+    session.cart.splice(index,1);
+    res.redirect('back');
+});
+app.post('/buyProducts',function(req,res){
+    if(req.session.uid){
+    if(!session.cart) session.cart=[];
+    if(session.cart.length==0){
+        return res.send('empty cart');
+    }
+    for(i=0;i<session.cart.length;i++){
+       // console.log('bought: '+session.cart[i]);
+        let params = {userid:req.session.uid,prodid:session.cart[i]};
+        let purchase = new db.Purchase(null, params);
+        purchase.insert(function(purchase){
+           console.log('inserted prod :' + params.prodid +' for user: '+ params.userid)
+        });
+        if(i==session.cart.length-1){
+            res.send('success');
+        }
+    }
+    }
+    else{
+        res.send('please log in to buy products');
+    }
 });
 
 /*Inserts the user in the database. callback will be called with:
@@ -119,7 +188,12 @@ function insertUser(params, callback) {
         }
     });
 }
-
+app.post('/addToCart',function(req,res){
+    if(session.cart)
+        session.cart.push(req.body.id);
+    else session.cart = [req.body.id];
+    res.send('Items in cart: '+session.cart.length);
+});
 app.post('/create', function(req,res) {
     req.body.password = encrypt(req.body.password);
     insertUser(req.body, function(mes, id) {

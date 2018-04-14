@@ -1,0 +1,11 @@
+html
+    include includes/head.pug
+    body
+        include includes/header.pug
+        - var onclickEvent = "addToCart("+id+")";
+        h3=title
+        img.productImg(src='images/products/'+path)
+        p=description
+        b=price+'€'
+            button(onclick=onclickEvent)#buyButton Add to cart
+    script(src = 'scripts/product.js')
