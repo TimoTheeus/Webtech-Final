@@ -115,10 +115,10 @@ nav a:hover {
     width:300px;
     
 }
-.cartPriceTag{
+.listedPriceTag{
     float:right;
 }
-.cartItem{
+.listedProdItem{
     position:relative;
     width:500px;
     border:1px solid black;
@@ -131,7 +131,7 @@ nav a:hover {
     bottom: 8px;
     right: 16px;
 }
-.cartImg{
+.listedProdImg{
     width:80px;
 }
 .title{

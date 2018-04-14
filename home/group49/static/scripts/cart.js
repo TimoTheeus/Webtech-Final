@@ -5,8 +5,8 @@ $(function(){
             $.get('/prodData', {id:id},function(prodData){
                 console.log(prodData);
                 var removeAction = 'remove('+id+',this); ';
-                var prodObject =  $('<li class= "cartItem">'+prodData.title+'<span class = "cartPriceTag">'+prodData.price+'€'
-                    +'</span><br><img class = "cartImg" src= images/products/'+prodData.image+'><button onclick = '+removeAction+'class = "removeButton">Delete</button></li>');
+                var prodObject =  $('<li class= "listedProdItem">'+prodData.title+'<span class = "cartPriceTag">'+prodData.price+'€'
+                    +'</span><br><img class = "listedProdImg" src= images/products/'+prodData.image+'><button onclick = '+removeAction+'class = "removeButton">Delete</button></li>');
                 prodObject.appendTo($('#prodList'));
             });
         }

@@ -80,6 +80,15 @@ app.get('/profile', function(req, res){
 app.get('/signin', function(req, res){
     res.render('login');
 });
+app.get('/history',function(req,res){
+    res.render('history');
+});
+app.get('/historyItems',function(req,res){
+    var id = req.session.uid;
+    new db.Purchase(null,{userid:id}).selectMany('userid',function(purchases){
+        res.send(JSON.stringify(purchases));
+    });
+});
 app.get('/register', function(req, res){
     res.render('register');
 });
