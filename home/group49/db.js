@@ -75,6 +75,23 @@ class DBItem {
                 callback(result);
             });
     }
+    /*Like selectManyOptions, but instead of a list of options give a range that values must be between.
+    range should be an array where the first value is the lower limit and the second value is the upper limit.*/
+    selectManyRange(prop, range, callback) {
+        if (!this.cols.includes(prop))
+            console.log('No such prop: ' + prop);
+        else
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} BETWEEN ? AND ?`, range, (err, row) => {
+                var result = [];
+                if (rows)
+                    result = rows.map(row => {
+                        var id = row[this.idName];
+                        delete row[this.idName];
+                        return new this.constructor(id, row);
+                });
+                callback(result);
+            });
+    }
     /*Like selectMany, but will only select the first result row.
     callback will be called with the single created object or undefined if no rows were selected.*/
     selectSingle(prop, callback) {
@@ -232,6 +249,31 @@ module.exports = {
                     }
                     if (sel) f();
                     else callback(items);
+                });
+            }
+        }
+        /*Like getItems, but this time select all items that are part of one of the given categories,
+        instead of only the current category. options can be an array of either category names or ids.*/
+        getItemsOptions(options, callback, sel) {
+            if (typeof options[0] == 'string')
+                this.selectManyOptions('category', options, cats => getItemsOptions(x => x.id, callback, sel));
+            else {
+                var i = 0;
+                var items = [];
+                var length = 0;
+                function f() {
+                    i++;
+                    if (i == length + 1)
+                        callback(items);
+                }
+                new ProdToCat().selectManyOptions('catid', options, objs => {
+                    length = objs.length;
+                    for (var j = 0; j < length; j++) {
+                        items[j] = new module.exports.Product(objs[j].props.prodid);
+                        if (sel) items[j].select(f);
+                    }
+                    if (sel) f();
+                    else callback(items); //no select calls to wait for, call callback directly
                 });
             }
         }
