@@ -75,6 +75,23 @@ class DBItem {
                 callback(result);
             });
     }
+    /*Like selectManyOptions, but instead of a list of options give a range that values must be between.
+    range should be an array where the first value is the lower limit and the second value is the upper limit.*/
+    selectManyRange(prop, range, callback) {
+        if (!this.cols.includes(prop))
+            console.log('No such prop: ' + prop);
+        else
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} BETWEEN ? AND ?`, range, (err, row) => {
+                var result = [];
+                if (rows)
+                    result = rows.map(row => {
+                        var id = row[this.idName];
+                        delete row[this.idName];
+                        return new this.constructor(id, row);
+                });
+                callback(result);
+            });
+    }
     /*Like selectMany, but will only select the first result row.
     callback will be called with the single created object or undefined if no rows were selected.*/
     selectSingle(prop, callback) {
