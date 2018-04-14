@@ -15,9 +15,11 @@ app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-const menCategories = ['Accessories','Jeans','Shirts','Sweaters','Underwear','Slim Fit','Hoodies','Backpacks','Hats','Swimwear','Jackets'];
 function encrypt(s) {
     return shajs('sha256').update(s).digest('hex');
+}
+function firstUpper(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 var session;
@@ -65,9 +67,9 @@ app.get('/men/browse', function(req, res){
     });  
 });
 
-app.get('/men', function(req, res){
+app.get(/^\/((wo)?men|accessories)$/, function(req, res){
     new db.Product().getAll('brand', brands => 
-        new db.Category(1).getCombs(categories =>
+        new db.Category(null, {category: firstUpper(req.params[0])}).getCombs(categories =>
             res.render('prodbrowser', {
                 categories: categories.map(x => x.props.category),
                 brands: brands
@@ -76,12 +78,6 @@ app.get('/men', function(req, res){
     );
 });
 
-app.get('/women', function(req, res){
-    res.render('prodbrowser', {
-        categories:menCategories,
-        brands:brands
-    });
-});
 app.get('/profile', function(req, res){
     if(req.session.uid) { // if a session exists
         new db.User(req.session.uid).select(function(user) {
