@@ -106,6 +106,26 @@ class DBItem {
                 } else callback();
             });
     }
+    /*Searches the db for rows where value is a substring of the requested prop.
+    callback is called with an array of the created objects representing the rows.*/
+    search(prop, value, callback) {
+        if (!this.cols.includes(prop))
+            console.log('No such prop: ' + prop);
+        else if (!this.cols.includes(orderby))
+            console.log('No such prop: ' + orderby);
+        else {
+            db.all(`SELECT * FROM ${this.table} WHERE ${prop} LIKE %?%`, value, (err, rows) => {
+                var result = [];
+                if (rows)
+                    result = rows.map(row => {
+                        var id = row[this.idName];
+                        delete row[this.idName];
+                        return new this.constructor(id, row);
+                });
+                callback(result);
+            });
+        }
+    }
     /*Gets all possible values for a certain column in the table.
     callback will be called with an array of values for that column.*/
     getAll(prop, callback) {
@@ -203,25 +223,29 @@ module.exports = {
         Products are important. If true, the select method will be called and all of the properties will be available.
         Otherwise only the id will be available until you call select yourself.*/
         getItems(callback, sel) {
-            var i = 0;
-            var items = [];
-            var length = 0;
-            /*Help function that increases i when a Product.select call is done.
-            Once all calls are done, calls the callback function.*/
-            function f() {
-                i++;
-                if (i == length + 1)
-                    callback(items);
-            }
-            new ProdToCat(null, {catid: this.id}).selectMany('catid', objs => {
-                length = objs.length;
-                for (var j = 0; j < length; j++) {
-                    items[j] = new module.exports.Product(objs[j].props.prodid);
-                    if (sel) items[j].select(f);
+            if (!this.id)
+                this.selectSingle('category', obj => obj.getItems(callback, sel));
+            else {
+                var i = 0;
+                var items = [];
+                var length = 0;
+                /*Help function that increases i when a Product.select call is done.
+                Once all calls are done, calls the callback function.*/
+                function f() {
+                    i++;
+                    if (i == length + 1)
+                        callback(items);
                 }
-                if (sel) f();
-                else callback(items); //no select calls to wait for, call callback directly
-            });
+                new ProdToCat(null, {catid: this.id}).selectMany('catid', objs => {
+                    length = objs.length;
+                    for (var j = 0; j < length; j++) {
+                        items[j] = new module.exports.Product(objs[j].props.prodid);
+                        if (sel) items[j].select(f);
+                    }
+                    if (sel) f();
+                    else callback(items); //no select calls to wait for, call callback directly
+                });
+                }
         }
         /*Get all other categories that exist on the same product as this category.
         callback will be called with an array of Categories. sel is the same as for getItems,

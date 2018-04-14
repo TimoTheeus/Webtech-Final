@@ -15,9 +15,11 @@ app.use(express.static(staticPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-const menCategories = ['Accessories','Jeans','Shirts','Sweaters','Underwear','Slim Fit','Hoodies','Backpacks','Hats','Swimwear','Jackets'];
 function encrypt(s) {
     return shajs('sha256').update(s).digest('hex');
+}
+function firstUpper(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 var session;
@@ -28,16 +30,14 @@ app.get('/', function(req, res){
     title: 'Home'
   });
 });
-app.get('/:mainctgry/browse', function(req, res){
+app.get(/^\/((wo)?men|accessories)\/browse$/, function(req, res){
     var ctgrs = JSON.parse(req.query.categories);
     var brands = JSON.parse(req.query.brands);
-    var mainCategory = req.params.mainctgry;
+    var mainCategory = firstUpper(req.params[0]);
     var menProducts =[];
     var mainCatId;
-    if(ctgrs.length==0){
-        if(mainCategory=='men') ctgrs.push('Men');
-        else if(mainCategory=='women')ctgrs.push('Women');
-        else ctgrs.push('Accessories');
+    if(ctgrs.length==0) {
+        ctgrs.push(mainCategory);
     }
     if(mainCategory=='men')mainCatId=1;
     else if(mainCategory=='women')mainCatId=2;
@@ -48,43 +48,40 @@ app.get('/:mainctgry/browse', function(req, res){
     var mainQueryDone = false;
     console.log(ctgrs);
     console.log(brands);
-    new db.Category(mainCatId).getItems(function(items){
-        for(i=0;i<items.length;i++){
+    new db.Category(null, {category:mainCategory}).getItems(function(items){
+        for(i=0; i<items.length; i++)
                 menProducts.push(items[i].id);
+        new db.Category().selectManyOptions('category',ctgrs,function(categories){
+            if(!categories){
+                res.send(products);
             }
-            //mainQueryDone=true;
-        });
-    //get all categories
-    new db.Category().selectManyOptions('category',ctgrs,function(categories){
-        if(!categories){
-            res.send(products);
-        }
-        expectedDone=categories.length;
-        for(j=0;j<categories.length;j++){
-            //for all items with these categories
-            new db.Category(categories[j].id).getItems(function(items){
-                for(i=0;i<items.length;i++){
-                    //push them to products array
-                    if((!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
-                        items[i].props.id=items[i].id;
-                        products.push(items[i].props);
-                      //  console.log(items[i].props);
+            expectedDone=categories.length;
+            for(j=0;j<categories.length;j++){
+                //for all items with these categories
+                new db.Category(categories[j].id).getItems(function(items){
+                    for(i=0;i<items.length;i++){
+                        //push them to products array
+                        if((!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
+                            items[i].props.id=items[i].id;
+                            products.push(items[i].props);
+                        //  console.log(items[i].props);
+                        }
                     }
-                }
-                amountDone++;
-                if(j==categories.length&&expectedDone==amountDone){
-                    console.log('printing');
-                    var string = JSON.stringify(products);
-                    res.send(string);
-                }
-            },true);
-        }
-    });  
+                    amountDone++;
+                    if(j==categories.length&&expectedDone==amountDone){
+                        console.log('printing');
+                        var string = JSON.stringify(products);
+                        res.send(string);
+                    }
+                },true);
+            }
+        });
+    });
 });
 
-app.get('/men', function(req, res){
+app.get(/^\/((wo)?men|accessories)/, function(req, res){
     new db.Product().getAll('brand', brands => 
-        new db.Category(1).getCombs(categories =>
+        new db.Category(null, {category: firstUpper(req.params[0])}).getCombs(categories =>
             res.render('prodbrowser', {
                 categories: categories.map(x => x.props.category),
                 brands: brands
@@ -93,26 +90,6 @@ app.get('/men', function(req, res){
     );
 });
 
-app.get('/women', function(req, res){
-    new db.Product().getAll('brand', brands => 
-        new db.Category(2).getCombs(categories =>
-            res.render('prodbrowser', {
-                categories: categories.map(x => x.props.category),
-                brands: brands
-            }),
-        true)
-    );
-});
-app.get('/accessories', function(req, res){
-    new db.Product().getAll('brand', brands => 
-        new db.Category(3).getCombs(categories =>
-            res.render('prodbrowser', {
-                categories: categories.map(x => x.props.category),
-                brands: brands
-            }),
-        true)
-    );
-});
 app.get('/profile', function(req, res){
     if(req.session.uid) { // if a session exists
         new db.User(req.session.uid).select(function(user) {
