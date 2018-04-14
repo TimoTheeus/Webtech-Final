@@ -1,9 +1,18 @@
 $(function() {
     var page = 1;
     let mainCategory = location.pathname.split('/')[1];
-    var categories = [mainCategory];
+    var categories = [];
     var brands = [];
     var products = [];
+    var ordering = 'title';
+    var priceLow = 0;
+    var priceHigh = 200;
+    //show all products of main category with default ordering etc.
+    var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&ordering='+ordering+'&priceLow='+priceLow+'&priceHigh='+priceHigh;
+    $.get( url, function( data ) {
+            products = JSON.parse(data);
+            showProducts(page,products,true);
+    });
     $('.ctgryList').find('input[type=checkbox]:checked').removeAttr('checked');
     $('.brandList').find('input[type=checkbox]:checked').removeAttr('checked');
     $('#showMore').click(function(e){
@@ -25,16 +34,14 @@ $(function() {
             //Select a single category
             $('.ctgryList').find('input[type=checkbox]:checked').removeAttr('checked');
             e.target.parentNode.children[0].checked = true;
-            categories = [mainCategory];
+            categories = [];
             categories.push(e.target.name);
         }
-        var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&page='+page;
+        var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&ordering='+ordering+'&priceLow='+priceLow+'&priceHigh='+priceHigh;
         $.get( url, function( data ) {
             products = JSON.parse(data);
-                showProducts(page,products,true);
+            showProducts(page,products,true);
             });
-        
-        
     });
     $( '.brand').click(function(e) {
         //add a brand to brand array
@@ -53,8 +60,10 @@ $(function() {
             e.target.parentNode.children[0].checked = true;
             brands = [e.target.name];
         }
-        var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&page='+page;
+        console.log(brands);
+        var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&ordering='+ordering+'&priceLow='+priceLow+'&priceHigh='+priceHigh;
         $.get( url, function( data ) {
+            console.log('hey');
             products = JSON.parse(data);
             showProducts(page,products,true);
         });
