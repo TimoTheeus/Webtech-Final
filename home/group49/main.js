@@ -144,12 +144,13 @@ app.get('/cart', function(req, res){
     res.render('cart');
 });
 app.get('/cartItems',function(req,res){
-    if(!req.session.cart) req.session.cart=[];
+    if(!session.cart) session.cart=[];
     res.send(session.cart);
 });
 app.get('/prodData',function(req,res){
     var id = req.query.id;
     new db.Product(req.query.id).select(function(prod){
+        prod.props.id=req.query.id;
         res.send(prod.props);
     });
 });
