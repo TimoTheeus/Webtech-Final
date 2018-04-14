@@ -28,17 +28,34 @@ app.get('/', function(req, res){
     title: 'Home'
   });
 });
-app.get('/men/browse', function(req, res){
-    var catgrs = JSON.parse(req.query.categories);
+app.get('/:mainctgry/browse', function(req, res){
+    var ctgrs = JSON.parse(req.query.categories);
     var brands = JSON.parse(req.query.brands);
-    catgrs.push('Men');
+    var mainCategory = req.params.mainctgry;
+    var menProducts =[];
+    var mainCatId;
+    if(ctgrs.length==0){
+        if(mainCategory=='men') ctgrs.push('Men');
+        else if(mainCategory=='women')ctgrs.push('Women');
+        else ctgrs.push('Accessories');
+    }
+    if(mainCategory=='men')mainCatId=1;
+    else if(mainCategory=='women')mainCatId=2;
+    else mainCatId=3;
     var products =[];
     var amountDone = 0;//amount of categories done processing
     var expectedDone;//expected amount
-    console.log(catgrs);
+    var mainQueryDone = false;
+    console.log(ctgrs);
     console.log(brands);
+    new db.Category(mainCatId).getItems(function(items){
+        for(i=0;i<items.length;i++){
+                menProducts.push(items[i].id);
+            }
+            //mainQueryDone=true;
+        });
     //get all categories
-    new db.Category().selectManyOptions('category',catgrs,function(categories){
+    new db.Category().selectManyOptions('category',ctgrs,function(categories){
         if(!categories){
             res.send(products);
         }
@@ -48,7 +65,7 @@ app.get('/men/browse', function(req, res){
             new db.Category(categories[j].id).getItems(function(items){
                 for(i=0;i<items.length;i++){
                     //push them to products array
-                    if(!brands.length>0||brands.includes(items[i].props.brand)){  
+                    if((!brands.length>0||brands.includes(items[i].props.brand))&&menProducts.includes(items[i].id)){  
                         items[i].props.id=items[i].id;
                         products.push(items[i].props);
                       //  console.log(items[i].props);
@@ -77,10 +94,24 @@ app.get('/men', function(req, res){
 });
 
 app.get('/women', function(req, res){
-    res.render('prodbrowser', {
-        categories:menCategories,
-        brands:brands
-    });
+    new db.Product().getAll('brand', brands => 
+        new db.Category(2).getCombs(categories =>
+            res.render('prodbrowser', {
+                categories: categories.map(x => x.props.category),
+                brands: brands
+            }),
+        true)
+    );
+});
+app.get('/accessories', function(req, res){
+    new db.Product().getAll('brand', brands => 
+        new db.Category(3).getCombs(categories =>
+            res.render('prodbrowser', {
+                categories: categories.map(x => x.props.category),
+                brands: brands
+            }),
+        true)
+    );
 });
 app.get('/profile', function(req, res){
     if(req.session.uid) { // if a session exists

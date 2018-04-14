@@ -110,7 +110,7 @@ INSERT INTO Categories VALUES
 (7,'Underwear'),
 (8,'Slim Fit'),
 (9, 'Hoodies'),
-(10,'Backpacks & Bags'),
+(10,'Backpacks and Bags'),
 (11,'Hats'),
 (12,'Swimwear'),
 (13,'Jackets');
