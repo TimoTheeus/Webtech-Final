@@ -235,6 +235,31 @@ module.exports = {
                 });
             }
         }
+        /*Like getItems, but this time select all items that are part of one of the given categories,
+        instead of only the current category. options can be an array of either category names or ids.*/
+        getItemsOptions(options, callback, sel) {
+            if (typeof options[0] == 'string')
+                this.selectManyOptions('category', options, cats => getItemsOptions(x => x.id, callback, sel));
+            else {
+                var i = 0;
+                var items = [];
+                var length = 0;
+                function f() {
+                    i++;
+                    if (i == length + 1)
+                        callback(items);
+                }
+                new ProdToCat().selectManyOptions('catid', options, objs => {
+                    length = objs.length;
+                    for (var j = 0; j < length; j++) {
+                        items[j] = new module.exports.Product(objs[j].props.prodid);
+                        if (sel) items[j].select(f);
+                    }
+                    if (sel) f();
+                    else callback(items); //no select calls to wait for, call callback directly
+                });
+            }
+        }
     },
     //Closes the database. Call this when you are done with all the queries you wanted to do.
     close: db.close
