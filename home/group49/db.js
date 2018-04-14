@@ -228,7 +228,7 @@ module.exports = {
         if it's false obj.props.category won't be available until you call select yourself.*/
         getCombs(callback, sel) {
             if (!this.id)
-                this.selectSingle('category', obj => obj.getCombs(callback));
+                this.selectSingle('category', obj => obj.getCombs(callback, sel));
             else {
                 //Same structure for optional selecting as getItems.
                 //Copied to keep it within function scope and not have to use object variables.
