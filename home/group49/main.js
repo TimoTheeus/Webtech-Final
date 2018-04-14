@@ -129,6 +129,29 @@ app.post('/removeFromCart',function(req,res){
     session.cart.splice(index,1);
     res.redirect('back');
 });
+app.post('/buyProducts',function(req,res){
+    if(req.session.uid){
+    if(!session.cart) session.cart=[];
+    if(session.cart.length==0){
+        return res.send('empty cart');
+    }
+    for(i=0;i<session.cart.length;i++){
+       // console.log('bought: '+session.cart[i]);
+        let params = {userid:req.session.uid,prodid:session.cart[i]};
+        let purchase = new db.Purchase(null, params);
+        purchase.insert(function(purchase){
+           console.log('inserted prod :' + params.prodid +' for user: '+ params.userid)
+        });
+        if(i==session.cart.length-1){
+            res.send('success');
+        }
+    }
+    }
+    else{
+        res.send('please log in to buy products');
+    }
+});
+
 /*Inserts the user in the database. callback will be called with:
 'login exists' if there is already a user with the same username in the database
 'email exists' if there is already a user with the same email

@@ -13,7 +13,12 @@ $(function(){
     });
     $('#order').click(function(){
         if(confirm("Buy products?")){
-            //add cart products to user history
+            $.post('/buyProducts',function(response){
+                if(response=='success'){
+                    alert('products bought!');
+                }
+                else alert(response);
+            });
         }
     });
 });
