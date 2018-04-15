@@ -9,7 +9,6 @@ $(function() {
     var priceHigh = 150;
     var search='';
     function reload(){
-        search = document.getElementById('searchBar').value;
         //show all products of main category with default ordering etc.
     var url = '/'+mainCategory+'/browse?categories=' +JSON.stringify(categories)+'&brands='+JSON.stringify(brands)+'&ordering='+ordering+'&priceLow='+priceLow+'&priceHigh='+priceHigh+'&search='+search;
     $.get( url, function( data ) {
@@ -19,9 +18,11 @@ $(function() {
     }
 
     reload();
+    document.getElementById('searchBar').value = '';
     $('.ctgryList').find('input[type=checkbox]:checked').removeAttr('checked');
     $('.brandList').find('input[type=checkbox]:checked').removeAttr('checked');
     $('#searchButton').click(function(){
+        search = document.getElementById('searchBar').value;
         reload();
     });
     document.getElementById('range').onchange = function() {
