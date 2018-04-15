@@ -2,6 +2,10 @@ group id: 49
 students: Timo van Milligen - 5710553, Fabian Machielsen - 
 http://webtech.science.uu.nl/group49 <-- Not working, couldn't get it to not crash on the server
 
+Website description:
+A web store for clothing where u can create a user, login, edit/view your profile and history, 
+browse products,sort them, add them to your cart and check out.
+
 Application structure:
 +-- node_modules
 +-- static
@@ -94,6 +98,9 @@ Application structure:
 |   	+-- selector.js
 +-- views
 |   +-- includes
+|   	+-- foot.pug
+|   	+-- head.pug
+|   	+-- header.pug
 |   +-- cart.pug
 |   +-- history.pug
 |   +-- home.pug
@@ -105,13 +112,15 @@ Application structure:
 +-- _layouts
 |   +-- default.html
 |   +-- post.html
-+-- _posts
-|   +-- 2007-10-29-why-every-programmer-should-play-nethack.textile
-|   +-- 2009-04-26-barcamp-boston-4-roundup.textile
-+-- _data
-|   +-- members.yml
-+-- _site
-+-- index.html
++-- data.db
++-- db.js
++-- defandfill.txt
++-- main.js
++-- package.json
++-- package-lock.json
+
+database structure:
+ ER DIAGRAM: https://drive.google.com/file/d/1qzKp6Kp8yvPZowv_Qeni1nH3wUbRp6Fx/view?usp=sharing
 
 Logins and passwords:
 login: admin password:admin
